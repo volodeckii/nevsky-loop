@@ -141,6 +141,46 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
         
     await callback.answer()
 
+# --- СЦЕНА 4: НАПАДЕНИЕ У ДВЕРИ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_4_attack")
+async def scene_4_attack(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я рванул замок и со всей силы толкнул дверь плечом. Тяжелое деревянное полотно с хрустом впечаталось в фигуру в дождевике. "
+            "Он пошатнулся, но не упал. Я с рычанием бросился на него, целясь в шею, но его реакция была нечеловеческой. \n\n"
+            "Взмах руки в черной перчатке. Короткая вспышка тусклого света на лезвии. Жгучая, невыносимая боль пронзила грудь. "
+            "Я осел на грязный кафель подъезда, захлебываясь. Черный капюшон склонился надо мной. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- ПЕРЕЗАПУСК ПЕТЛИ ---
+@dp.callback_query(lambda c: c.data == "restart_loop")
+async def restart_loop(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(2)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Ты под чем-то? Какая смерть?", callback_data="scene_2")
+    kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
+    kb.adjust(1) 
+    
+    text = ("*СНОВА ЭТОТ КОШМАР*\n\n"
+            "Я... я опять проснулся в кровати. Холодный пот льет ручьем. На часах 19:42. Я же только что умер в подъезде! "
+            "Слушай, контакт на проездном — это моя единственная зацепка. Помоги мне, иначе я так и буду умирать здесь вечно!")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
