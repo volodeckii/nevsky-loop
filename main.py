@@ -503,6 +503,48 @@ async def scene_10_train(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 11: ОКНО (СМЕРТЬ ОТ ПЕРЕГРУЗКИ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_11_window")
+async def scene_11_window(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я прислонился лбом к холодному стеклу. Вспышки в туннеле становились всё четче. Я увидел... себя. "
+            "В одной из реальностей я просто крутил баранку автомобиля, уставший после обычной смены. В другой — меня насмерть сбивала машина. "
+            "Это была наглядная демонстрация квантового бессмертия. Я видел бесконечное древо параллельных миров.\n\n"
+            "Но человеческий мозг не создан для того, чтобы видеть исходный код симуляции. От бесконечного потока данных пространство начало искажаться, "
+            "мысли превратились в ослепительный белый шум. Разум просто не выдержал перегрузки. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (СЮЖЕТ) ---
+@dp.callback_query(lambda c: c.data == "scene_11_folder")
+async def scene_11_folder(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Выйти на пустую платформу", callback_data="scene_12_platform")
+    kb.button(text="Остаться в вагоне", callback_data="scene_12_stay")
+    kb.adjust(1)
+    
+    text = ("Я отвернулся от пугающего окна и открыл папку. Внутри было мое досье. Но не полицейское. "
+            "Кто-то буквально препарировал мою цифровую жизнь: логи настроек моих приватных браузеров, схемы с фейковыми аккаунтами на Reddit, "
+            "зарегистрированными через Proton Mail, и даже глубокий анализ EXIF-метаданных моих личных фотографий.\n\n"
+            "Они использовали продвинутые методы разведки по открытым источникам, чтобы отследить каждый мой шаг в сети. "
+            "Под кипой распечаток лежал старый бумажный билет, на котором было выбито: «Конечная. Узел связи». \n\n"
+            "В этот момент поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
