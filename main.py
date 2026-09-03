@@ -220,6 +220,45 @@ async def scene_5_search_weapon(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 6: ВЕНТИЛЯЦИЯ (СПАСЕНИЕ НА УЛИЦУ) ---
+@dp.callback_query(lambda c: c.data == "scene_6_vent")
+async def scene_6_vent(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Рвануть дворами к метро", callback_data="scene_7_subway")
+    kb.button(text="Спрятаться в арке и осмотреться", callback_data="scene_7_arch")
+    kb.adjust(1)
+    
+    text = ("Я запрыгнул на край раковины, сорвал решетку вентиляции и втиснулся в узкую шахту. "
+            "В этот же момент дверь ванной с треском вылетела. Я замер в темноте, не дыша. Внизу кто-то тяжело топтался, скрипел стеклом на полу. \n\n"
+            "Выждав минуту, я пополз по пыльному коробу. Он вывел меня на чердак, а оттуда — через служебную лестницу — прямо в темный петербургский двор. "
+            "Дождь льет стеной. До метро Василеостровская пара кварталов, но улицы могут патрулировать...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 6: ПРЯТАТЬСЯ ЗА ШТОРКОЙ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_6_hide")
+async def scene_6_hide(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Паника сковала меня. Я залез в саму ванну и задернул дешевую пластиковую шторку. Гениальный план, ничего не скажешь... "
+            "Дверь с грохотом вылетела. Шаги приблизились к раковине. Секунда тишины. \n\n"
+            "Шторку резко сдернули. Человек в дождевике даже не стал доставать нож. Он просто протянул руку в черной перчатке и сжал мое лицо, вдавливая в затылок. "
+            "Хруст шейных позвонков. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
