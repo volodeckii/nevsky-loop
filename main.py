@@ -582,6 +582,57 @@ async def scene_12_platform(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 13: ГЕРМОДВЕРЬ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_13_door")
+async def scene_13_door(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я проигнорировал терминал и бросился к огромной гермодвери. Если это бункер или серверная, у нее должен быть черный ход! "
+            "Я ухватился за тяжелый металлический вентиль и с рычанием попытался его провернуть.\n\n"
+            "Внезапно раздался оглушительный вой сирены. Красные лампы залили зал тревожным светом. "
+            "Механизм двери пришел в движение, но не для того, чтобы открыться. Тяжелые стальные плиты сдвинулись, намертво зажимая мою руку. "
+            "От болевого шока я потерял сознание еще до того, как система запустила протокол термической очистки помещения. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 13: ГЛАВНЫЙ ТЕРМИНАЛ (КЛИФФХЭНГЕР - КОНЕЦ 1 АКТА) ---
+@dp.callback_query(lambda c: c.data == "scene_13_terminal")
+async def scene_13_terminal(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(5)
+    
+    # Кнопки для будущего платного продолжения
+    kb = InlineKeyboardBuilder()
+    kb.button(text="🔒 Разблокировать Эпизод 2", callback_data="buy_premium")
+    kb.button(text="Начать Эпизод 1 сначала", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я подошел к терминалу. На зеленом экране бежали бесконечные строки кода — имена, адреса, геолокации, проценты вероятностей. "
+            "Это был массив данных о жизнях миллионов людей. \n\n"
+            "Я положил руки на клавиатуру, и экран внезапно мигнул. Текст пропал, сменившись одной-единственной мерцающей фразой:\n\n"
+            "«ОШИБКА АНОНИМИЗАЦИИ. ОБЪЕКТ ВЫШЕЛ ИЗ-ПОД КОНТРОЛЯ. ЗАПУСК ПРОТОКОЛА ЗАЧИСТКИ»\n\n"
+            "Позади меня раздался звук, от которого кровь стынет в жилах. Лязг взводимого затвора. Тот самый человек в черном дождевике стоял всего в пяти шагах. "
+            "Он снял капюшон, и я увидел лицо, которое не должен был увидеть никогда...\n\n"
+            "***\n"
+            "**КОНЕЦ ПЕРВОГО ЭПИЗОДА**\n"
+            "Вы достигли конца доступной бесплатной версии. Чтобы узнать, чье лицо скрывал капюшон, выбраться из симуляции и раскрыть масштабный заговор, требуется уровень доступа «Премиум».")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- ЗАГЛУШКА ДЛЯ ПРЕМИУМА ---
+@dp.callback_query(lambda c: c.data == "buy_premium")
+async def buy_premium(callback: types.CallbackQuery):
+    await callback.answer("Функция оплаты находится в разработке! Следите за обновлениями.", show_alert=True)
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
