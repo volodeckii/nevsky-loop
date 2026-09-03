@@ -298,6 +298,61 @@ async def scene_4_stealth(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 5: ОСМОТРЕТЬ КАРМАНЫ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_5_loot")
+async def scene_5_loot(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Жадность или глупое любопытство сыграли со мной злую шутку. Я наклонился над лежащим телом и сунул руку в карман его мокрого дождевика.\n\n"
+            "Внезапно его рука, словно стальной капкан, сомкнулась на моем запястье. Он не был в отключке! Резкий рывок на себя, тусклый блеск лезвия... "
+            "Холодная сталь вошла мне точно под ребра. Я рухнул рядом с ним, глядя, как он медленно поднимается. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 4: ОКНО - НА КРЫШУ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_4_roof")
+async def scene_4_roof(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я рванул вверх по ржавым ступеням. Дождь хлестал в лицо, металл скользил под руками. Я выбрался на плоскую крышу и обернулся.\n\n"
+            "Он уже был там. Черный силуэт на фоне грозового неба. Я попятился, поскользнулся на мокром рубероиде и потерял равновесие. "
+            "Край крыши. Пустота. Ощущение свободного падения и резкий, дробящий кости удар о мокрый асфальт двора. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 4: ОКНО - ВНИЗ ВО ДВОР (ВЫЖИВАНИЕ) ---
+@dp.callback_query(lambda c: c.data == "scene_4_yard")
+async def scene_4_yard(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Рвануть дворами к метро", callback_data="scene_7_subway")
+    kb.button(text="Спрятаться в арке и осмотреться", callback_data="scene_7_arch")
+    kb.adjust(1)
+    
+    text = ("Не раздумывая, я начал быстро спускаться вниз. Ржавые крепления опасно скрипели, но выдержали. Я спрыгнул в грязь темного петербургского двора-колодца.\n\n"
+            "Глянув наверх, я увидел, как из моего разбитого окна высовывается фигура в черном. Он заметил меня. "
+            "Нужно убираться отсюда! До метро Василеостровская пара кварталов, но бежать по открытым улицам — чистое самоубийство.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
