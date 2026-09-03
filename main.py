@@ -353,6 +353,36 @@ async def scene_4_yard(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 7: МЕТРО ВАСИЛЕОСТРОВСКАЯ (СЮЖЕТ И ЖЕТОН) ---
+@dp.callback_query(lambda c: c.data == "scene_7_subway")
+async def scene_7_subway(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    # Меняем статус бота на "отправляет фото"
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Спуститься в подземный переход", callback_data="scene_8_underground")
+    kb.button(text="Осмотреть телефонную будку у входа", callback_data="scene_8_booth")
+    kb.adjust(1)
+    
+    text = ("Я рванул через дворы, перемахивая через лужи и пугая редких бродячих собак. Сердце колотилось в горле. "
+            "Наконец, впереди показался массивный козырек станции метро «Василеостровская». Двери были закрыты — станция не работает. \n\n"
+            "Я подошел ближе. На каменном парапете у входа, прямо под тусклым фонарем, лежал абсолютно черный, матовый металлический жетон метрополитена. "
+            "Под ним клочок бумаги, размокший от дождя. На нем корявым почерком: «Спускайся. Они боятся темноты».\n\n"
+            "Я сжал холодный жетон в кулаке. Куда идти дальше?")
+            
+    try:
+        # ИМЯ ФАЙЛА КАРТИНКИ (УБЕДИСЬ, ЧТО ОНО СОВПАДАЕТ С GITHUB)
+        photo = FSInputFile("token.jpg")
+        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        # Если картинка не прогрузится, бот пришлет хотя бы текст
+        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
+        
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
