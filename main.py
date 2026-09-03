@@ -6,7 +6,7 @@ from aiogram.types import FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiohttp import web
 
-TOKEN = "8658859502:AAGtsBnmte6n_uhqHowBFFoO1Jm2yS3EY3g"
+TOKEN = "8658859502:AAEa1fsHa-5GhhF5Jag1Kpr4D8CMFgEg8Z4"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
