@@ -465,6 +465,44 @@ async def scene_9_token(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 10: ЧАСЫ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_10_clock")
+async def scene_10_clock(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я подошел к огромным циферблатам. Стрелки бешено вращались против часовой. Я завороженно смотрел на них, пытаясь понять логику механизма, как вдруг осознал: они буквально отматывают мое время назад.\n\n"
+            "Глухой звук шагов позади. Пространство на платформе снова сомкнулось. Тот факт, что я задержался, позволил «ему» нагнать меня. "
+            "Я обернулся слишком поздно. Человек в дождевике стоял вплотную. Холодное лезвие. Темнота. Очередная ветка реальности обрывается...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 10: ПУСТОЙ ВАГОН (СЮЖЕТ - ПАРАЛЛЕЛЬНЫЕ МИРЫ) ---
+@dp.callback_query(lambda c: c.data == "scene_10_train")
+async def scene_10_train(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Смотреть в черное окно туннеля", callback_data="scene_11_window")
+    kb.button(text="Открыть папку на сиденье", callback_data="scene_11_folder")
+    kb.adjust(1)
+    
+    text = ("Я запрыгнул в вагон. Двери тут же с шипением захлопнулись. Поезд дернулся и начал набирать скорость, уходя в абсолютно черный туннель. \n\n"
+            "В вагоне неестественно тихо. Нет привычного стука колес, только ровный низкий гул, словно работают мощные серверные кулеры. "
+            "Я прошел вглубь салона. На одном из дерматиновых сидений лежала пухлая картонная папка. Из нее торчали какие-то распечатки, базы данных, схемы и фотографии.\n\n"
+            "А за окном туннеля начало происходить нечто невообразимое. Вместо кабелей и бетона там мелькали вспышки света, похожие на обрывки других жизней... параллельных реальностей, где я принимал другие решения, жил другой жизнью и не попадал в эту петлю.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
