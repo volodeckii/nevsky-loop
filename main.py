@@ -259,6 +259,45 @@ async def scene_6_hide(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 4: НОЖ - УДАР В ЛОБ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_4_strike")
+async def scene_4_strike(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Едва дверь приоткрылась, я с криком рванул вперед, нанося удар ножом сверху вниз. \n\n"
+            "Но я недооценил его реакцию. Дверь резко распахнулась до конца, ударив меня по руке. Нож со звоном отлетел в сторону. "
+            "Фигура в дождевике сделала неуловимое движение. Тупое лезвие пробило ребра. Я осел на пол, хватая ртом воздух. "
+            "Холодные глаза из-под капюшона. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 4: НОЖ - НАПАСТЬ СО СПИНЫ (ВЫЖИВАНИЕ) ---
+@dp.callback_query(lambda c: c.data == "scene_4_stealth")
+async def scene_4_stealth(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Рвануть по лестнице вниз, на улицу!", callback_data="scene_7_subway") # Заметь, ведет на ту же сцену, что и вентиляция!
+    kb.button(text="Осмотреть его карманы", callback_data="scene_5_loot")
+    kb.adjust(1)
+    
+    text = ("Я вжался в стену, почти не дыша. Дверь скрипнула, и высокая фигура в мокром дождевике медленно шагнула в прихожую. "
+            "Он двинулся на кухню, держа в руке что-то блестящее. \n\n"
+            "Это мой шанс. Я замахнулся и со всей силы ударил рукоятью ножа (тяжелой стальной пяткой) ему в основание черепа. "
+            "Раздался глухой стук. Человек рухнул на пол, как подкошенный, но тут же начал шевелиться. Удар лишь оглушил его на пару секунд!")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
