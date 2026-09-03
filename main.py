@@ -114,6 +114,33 @@ async def scene_3_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 4: ВАННАЯ И ПЕЙДЖЕР ---
+@dp.callback_query(lambda c: c.data == "scene_4_bathroom")
+async def scene_4_bathroom(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Взять пейджер и прочитать сообщение", callback_data="scene_5_pager_read")
+    kb.button(text="Бросить его и искать оружие", callback_data="scene_5_search_weapon")
+    kb.adjust(1)
+    
+    text = ("Я отскочил от двери, влетел в ванную и с щелчком задвинул задвижку. В коридоре раздался грохот — входную дверь высадили.\n\n"
+            "Тяжелые мокрые шаги медленно приближаются. Я пячусь к раковине, тяжело дыша, и вдруг слышу звук. Писк. "
+            "В пустой металлической раковине лежит старый черный пейджер. Экран светится зеленым, на него только что пришло сообщение. "
+            "Шаги за дверью замерли, кто-то положил руку на ручку...")
+            
+    try:
+        # УБЕДИСЬ, ЧТО НАЗВАНИЕ КАРТИНКИ СОВПАДАЕТ С ТВОИМ ФАЙЛОМ НА GITHUB!
+        photo = FSInputFile("pager.jpg")
+        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
+        
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
