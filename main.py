@@ -37,7 +37,7 @@ async def scene_2(callback: types.CallbackQuery):
     await asyncio.sleep(3)
     
     kb = InlineKeyboardBuilder()
-    kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3")
+    kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3_peephole")
     kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3")
     kb.button(text="Бей окно, лезь на пожарную лестницу!", callback_data="scene_3")
     kb.adjust(1)
@@ -54,28 +54,24 @@ async def scene_2(callback: types.CallbackQuery):
         
     await callback.answer()
 
-@dp.callback_query(lambda c: c.data == "scene_3")
-async def scene_3(callback: types.CallbackQuery):
-    await callback.answer("Продолжение следует! База работает отлично 🚀", show_alert=True)
-
-# Заглушка веб-сервера для Render (чтобы сервис не засыпал)
-async def handle(request):
-    return web.Response(text="Bot is running!")
-
-async def web_server():
-    app = web.Application()
-    app.router.add_get("/", handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    port = int(os.environ.get("PORT", 10000))
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    await site.start()
-
-async def main():
-    # Запускаем веб-сервер и бота одновременно
-    asyncio.create_task(web_server())
-    print("Бот и веб-сервер запущены!")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+# --- СЦЕНА 3: ГЛАЗОК ---
+@dp.callback_query(lambda c: c.data == "scene_3_peephole")
+async def scene_3_peephole(callback: types.CallbackQuery):
+    # Убираем кнопки у прошлого сообщения, чтобы игрок не мог нажать их дважды
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Рвануть дверь и сбить его с ног!", callback_data="scene_4_attack")
+    kb.button(text="Отбежать в ванную и запереться", callback_data="scene_4_bathroom")
+    kb.adjust(1)
+    
+    text = ("Я на цыпочках подкрался к двери и прильнул к глазку. На лестничной клетке мигает перегоревшая лампа. "
+            "Там стоит кто-то в черном мокром дождевике. Лица не видно, капюшон надвинут на самые глаза. "
+            "Он вдруг перестает стучать, медленно поднимает голову к глазку и... я клянусь, он смотрит прямо на меня. "
+            "Достает из кармана что-то металлическое и начинает ковыряться в замке. Он вскрывает дверь!")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
