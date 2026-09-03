@@ -383,6 +383,46 @@ async def scene_7_subway(callback: types.CallbackQuery):
         
     await callback.answer()
 
+# --- СЦЕНА 8: ТЕЛЕФОННАЯ БУДКА (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_8_booth")
+async def scene_8_booth(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я подошел к разбитой телефонной будке. Внутри пахло сыростью и старым пластиком. Я снял трубку — гудков не было, только тихий статический треск. \n\n"
+            "Внезапно треск превратился в шепот: «Ты не там ищешь». "
+            "Я резко обернулся, но дверь будки уже была заблокирована. Снаружи стоял он. Фигура в дождевике просто прижала ладонь к стеклу. "
+            "Стекло взорвалось внутрь тысячами острых осколков. Один из них попал прямо в артерию на шее. Горячая кровь. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 8: ПОДЗЕМНЫЙ ПЕРЕХОД (СЮЖЕТ И ТУРНИКЕТ) ---
+@dp.callback_query(lambda c: c.data == "scene_8_underground")
+async def scene_8_underground(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Опустить черный жетон в щель", callback_data="scene_9_token")
+    kb.button(text="Перепрыгнуть через турникет", callback_data="scene_9_jump")
+    kb.adjust(1)
+    
+    text = ("Я послушался записки и шагнул в сырую темноту подземного перехода. Свет с улицы сюда почти не проникал. "
+            "Ступени вели всё ниже и ниже, глубже, чем должно быть обычное метро. \n\n"
+            "Внезапно туннель перегородила массивная железная решетка. В ней была оставлена только одна узкая калитка, а перед ней — старый советский турникет. "
+            "Лампочка на нем не горела. На металлическом корпусе блестела узкая щель жетоноприемника. \n\n"
+            "Где-то на ступенях позади меня послышались тяжелые, хлюпающие шаги. Он идет следом! Времени в обрез.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
