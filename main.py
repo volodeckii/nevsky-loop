@@ -545,6 +545,43 @@ async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 12: ОСТАТЬСЯ В ВАГОНЕ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_12_stay")
+async def scene_12_stay(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я решил, что безопаснее остаться внутри, и отступил вглубь вагона. Двери с шипением закрылись, отрезая меня от станции.\n\n"
+            "Поезд сорвался с места. Вскоре ровный гул серверов сменился жестким металлическим лязгом. Звук был до боли знакомый — точь-в-точь как стук растянутой цепи ГРМ на моем старом пежо с двигателем EP6 перед тем, как он окончательно встал и потребовал капиталки.\n\n"
+            "Лязг перерос в оглушающий рев. Вагон начало трясти так, что меня швырнуло на пол. Стены стали раскаляться докрасна, воздух выгорел за секунду. Похоже, система просто удалила этот вагон как программный мусор. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 12: ПЛАТФОРМА «УЗЕЛ СВЯЗИ» (СЮЖЕТ) ---
+@dp.callback_query(lambda c: c.data == "scene_12_platform")
+async def scene_12_platform(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Подойти к главному терминалу", callback_data="scene_13_terminal")
+    kb.button(text="Осмотреть гермодверь в конце зала", callback_data="scene_13_door")
+    kb.adjust(1)
+    
+    text = ("Я сделал глубокий вдох и шагнул на холодный бетон. За спиной тут же сомкнулись двери, и поезд-призрак бесшумно растворился во мраке туннеля.\n\n"
+            "Станция «Узел связи» вообще не была похожа на метро. Это напоминало гигантский подземный дата-центр. Бесконечные ряды гудящих серверных стоек, мигающие индикаторы коммутаторов и толстые пучки оптоволокна, уходящие куда-то под потолок. \n\n"
+            "Посреди зала возвышался одинокий стол с включенным главным терминалом. Экран заливал темноту ядовито-зеленым светом. А в самом конце зала виднелась огромная стальная гермодверь с массивным вентилем.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
