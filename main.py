@@ -423,6 +423,48 @@ async def scene_8_underground(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 9: ПРЫЖОК ЧЕРЕЗ ТУРНИКЕТ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_9_jump")
+async def scene_9_jump(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("Я решил не тратить время и, опершись на скользкий металл, прыгнул через турникет. \n\n"
+            "В ту же секунду пространство вокруг меня дрогнуло, словно на зажеванной видеокассете. "
+            "Воздух стал плотным, как бетон. Мое тело буквально застыло в воздухе прямо над турникетом, я не мог пошевелить даже пальцем, словно баг в программном коде.\n\n"
+            "Система не прощает нарушений. Из темноты не спеша вышел человек в дождевике. Он подошел, посмотрел на меня с абсолютным равнодушием "
+            "и вонзил нож мне в сердце. Темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 9: ЧЕРНЫЙ ЖЕТОН (СЮЖЕТ - ПЛАТФОРМА) ---
+@dp.callback_query(lambda c: c.data == "scene_9_token")
+async def scene_9_token(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(4)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Зайти в пустой вагон", callback_data="scene_10_train")
+    kb.button(text="Осмотреть странные часы на стене", callback_data="scene_10_clock")
+    kb.adjust(1)
+    
+    text = ("Я закинул матовый черный жетон в прорезь. Раздался не металлический лязг, а странный электронный звук, похожий на загрузку старого компьютера. "
+            "Турникет мягко провернулся. Шаги преследователя позади внезапно стихли, будто нас отрезало друг от друга невидимой стеной.\n\n"
+            "Спустившись по неработающему эскалатору на платформу «Василеостровской», я обомлел. Она выглядела... иначе. "
+            "Никакой рекламы, никаких современных указателей. Только тусклый зеленоватый свет и идеальная, мертвая тишина. "
+            "Воздух здесь словно наэлектризован, а реальность кажется хрупкой, будто я выпал из привычного мира в параллельное измерение.\n\n"
+            "У перрона с открытыми дверями стоит абсолютно пустой состав. А на стене станции висят огромные часы, стрелки которых быстро крутятся в обратную сторону.")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
