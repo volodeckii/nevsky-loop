@@ -38,7 +38,7 @@ async def scene_2(callback: types.CallbackQuery):
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3_peephole")
-    kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3_knife)
+    kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3_knife")
     kb.button(text="Бей окно, лезь на пожарную лестницу!", callback_data="scene_3_window")
     kb.adjust(1)
     
