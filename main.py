@@ -38,8 +38,8 @@ async def scene_2(callback: types.CallbackQuery):
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3_peephole")
-    kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3")
-    kb.button(text="Бей окно, лезь на пожарную лестницу!", callback_data="scene_3")
+    kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3_knife)
+    kb.button(text="Бей окно, лезь на пожарную лестницу!", callback_data="scene_3_window")
     kb.adjust(1)
     
     text = ("Я переходил Лиговский. Визг тормозов, удар, хруст... и темнота. А потом резкий вдох — и я лежу в своей кровати. "
@@ -72,6 +72,44 @@ async def scene_3_peephole(callback: types.CallbackQuery):
             "Там стоит кто-то в черном мокром дождевике. Лица не видно, капюшон надвинут на самые глаза. "
             "Он вдруг перестает стучать, медленно поднимает голову к глазку и... я клянусь, он смотрит прямо на меня. "
             "Достает из кармана что-то металлическое и начинает ковыряться в замке. Он вскрывает дверь!")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+# --- СЦЕНА 3: НОЖ И ЗАСАДА ---
+@dp.callback_query(lambda c: c.data == "scene_3_knife")
+async def scene_3_knife(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Ударить, как только дверь приоткроется!", callback_data="scene_4_strike")
+    kb.button(text="Пропустить его в коридор и напасть со спины", callback_data="scene_4_stealth")
+    kb.adjust(1)
+    
+    text = ("Я метнулся на кухню, выхватил из подставки самый длинный шеф-нож и крикнул в сторону коридора: «Кто там?! Я вызвал полицию!».\n\n"
+            "Стук мгновенно прекратился. Повисла мертвая тишина, только дождь барабанит по карнизу. А затем я услышал тихий металлический скрежет — он вскрывает замок отмычкой. "
+            "Я вжался спиной в стену сбоку от входной двери, сжав рукоять ножа так, что побелели костяшки. Замок щелкнул. Ручка начала медленно опускаться вниз...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 3: ПОЖАРНАЯ ЛЕСТНИЦА ---
+@dp.callback_query(lambda c: c.data == "scene_3_window")
+async def scene_3_window(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Лезть наверх, на крышу", callback_data="scene_4_roof")
+    kb.button(text="Спускаться вниз, в темный двор", callback_data="scene_4_yard")
+    kb.adjust(1)
+    
+    text = ("Я схватил тяжелую табуретку и со всего размаху всадил ее в окно. Стекло брызнуло во все стороны. Холодный ливень ударил прямо в лицо. "
+            "Я перекинул ноги через подоконник и вцепился в ржавые прутья пожарной лестницы. \n\n"
+            "В этот самый момент входная дверь в квартиру с треском вылетела. Я успел заметить в коридоре высокую фигуру в черном дождевике, прежде чем начать двигаться. "
+            "Металл скользкий от дождя, руки дрожат. Куда рвануть?")
     
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
