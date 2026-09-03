@@ -181,6 +181,45 @@ async def restart_loop(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
+# --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР (СЮЖЕТ) ---
+@dp.callback_query(lambda c: c.data == "scene_5_pager_read")
+async def scene_5_pager_read(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Лезть в узкое вентиляционное окно под потолком", callback_data="scene_6_vent")
+    kb.button(text="Спрятаться в самой ванной за шторкой", callback_data="scene_6_hide")
+    kb.adjust(1)
+    
+    text = ("Я дрожащими руками хватаю пейджер. На узком зеленоватом экране светится сообщение:\n\n"
+            "«ОНИ ЗНАЮТ О ПЕТЛЕ. УХОДИ. ИЩИ ЧЕРНЫЙ ЖЕТОН У МЕТРО ВАСИЛЕОСТРОВСКАЯ»\n\n"
+            "В этот момент хлипкая дверь ванной содрогается от чудовищного удара. Дерево трещит. "
+            "Еще один удар — и он ворвется сюда. У меня есть считанные секунды!")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
+# --- СЦЕНА 5: ИСКАТЬ ОРУЖИЕ (СМЕРТЬ И ПЕТЛЯ) ---
+@dp.callback_query(lambda c: c.data == "scene_5_search_weapon")
+async def scene_5_search_weapon(callback: types.CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
+    
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    text = ("К черту пейджер! Я лихорадочно шарю по полкам, хватаю тяжелые парикмахерские ножницы и встаю в стойку. "
+            "Дверь разлетается в щепки. В ванную вваливается массивная фигура в черном дождевике. \n\n"
+            "Я бью ножницами наотмашь, целясь в шею... но лезвие со скрежетом скользит по чему-то твердому под плащом. Броня? "
+            "Он даже не дрогнул. Огромная рука в перчатке перехватывает мое горло и с нечеловеческой силой впечатывает в кафель. Воздух кончился. Снова темнота...")
+    
+    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.answer()
+
 # Заглушка веб-сервера для Render (чтобы сервис не засыпал)
 async def handle(request):
     return web.Response(text="Bot is running!")
