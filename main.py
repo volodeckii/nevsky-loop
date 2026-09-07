@@ -282,20 +282,25 @@ async def scene_4_strike(callback: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == "scene_4_stealth")
 async def scene_4_stealth(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
     await asyncio.sleep(4)
     
     kb = InlineKeyboardBuilder()
-    kb.button(text="Рвануть по лестнице вниз, на улицу!", callback_data="scene_7_subway") # Заметь, ведет на ту же сцену, что и вентиляция!
+    kb.button(text="Рвануть по лестнице вниз, на улицу!", callback_data="scene_7_subway")
     kb.button(text="Осмотреть его карманы", callback_data="scene_5_loot")
     kb.adjust(1)
     
     text = ("Я вжался в стену, почти не дыша. Дверь скрипнула, и высокая фигура в мокром дождевике медленно шагнула в прихожую. "
             "Он двинулся на кухню, держа в руке что-то блестящее. \n\n"
-            "Это мой шанс. Я замахнулся и со всей силы ударил рукоятью ножа (тяжелой стальной пяткой) ему в основание черепа. "
+            "Это мой шанс. Я замахнулся и со всей силы ударил рукоятью ножа ему в основание черепа. "
             "Раздался глухой стук. Человек рухнул на пол, как подкошенный, но тут же начал шевелиться. Удар лишь оглушил его на пару секунд!")
     
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    try:
+        photo = FSInputFile("killer.jpg")
+        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
+        
     await callback.answer()
 
 # --- СЦЕНА 5: ОСМОТРЕТЬ КАРМАНЫ (СМЕРТЬ И ПЕТЛЯ) ---
@@ -447,7 +452,7 @@ async def scene_9_jump(callback: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == "scene_9_token")
 async def scene_9_token(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
     await asyncio.sleep(4)
     
     kb = InlineKeyboardBuilder()
@@ -455,14 +460,16 @@ async def scene_9_token(callback: types.CallbackQuery):
     kb.button(text="Осмотреть странные часы на стене", callback_data="scene_10_clock")
     kb.adjust(1)
     
-    text = ("Я закинул матовый черный жетон в прорезь. Раздался не металлический лязг, а странный электронный звук, похожий на загрузку старого компьютера. "
-            "Турникет мягко провернулся. Шаги преследователя позади внезапно стихли, будто нас отрезало друг от друга невидимой стеной.\n\n"
-            "Спустившись по неработающему эскалатору на платформу «Василеостровской», я обомлел. Она выглядела... иначе. "
-            "Никакой рекламы, никаких современных указателей. Только тусклый зеленоватый свет и идеальная, мертвая тишина. "
-            "Воздух здесь словно наэлектризован, а реальность кажется хрупкой, будто я выпал из привычного мира в параллельное измерение.\n\n"
+    text = ("Я закинул жетон в прорезь. Раздался электронный звук, похожий на загрузку старого компьютера. Турникет провернулся. Шаги позади внезапно стихли.\n\n"
+            "Спустившись на платформу «Василеостровской», я обомлел. Никакой рекламы, никаких указателей. Только тусклый зеленоватый свет и идеальная, мертвая тишина. "
             "У перрона с открытыми дверями стоит абсолютно пустой состав. А на стене станции висят огромные часы, стрелки которых быстро крутятся в обратную сторону.")
     
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    try:
+        photo = FSInputFile("platform.jpg")
+        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
+        
     await callback.answer()
 
 # --- СЦЕНА 10: ЧАСЫ (СМЕРТЬ И ПЕТЛЯ) ---
@@ -567,7 +574,7 @@ async def scene_12_stay(callback: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == "scene_12_platform")
 async def scene_12_platform(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
     await asyncio.sleep(4)
     
     kb = InlineKeyboardBuilder()
@@ -575,11 +582,16 @@ async def scene_12_platform(callback: types.CallbackQuery):
     kb.button(text="Осмотреть гермодверь в конце зала", callback_data="scene_13_door")
     kb.adjust(1)
     
-    text = ("Я сделал глубокий вдох и шагнул на холодный бетон. За спиной тут же сомкнулись двери, и поезд-призрак бесшумно растворился во мраке туннеля.\n\n"
-            "Станция «Узел связи» вообще не была похожа на метро. Это напоминало гигантский подземный дата-центр. Бесконечные ряды гудящих серверных стоек, мигающие индикаторы коммутаторов и толстые пучки оптоволокна, уходящие куда-то под потолок. \n\n"
-            "Посреди зала возвышался одинокий стол с включенным главным терминалом. Экран заливал темноту ядовито-зеленым светом. А в самом конце зала виднелась огромная стальная гермодверь с массивным вентилем.")
+    text = ("Я шагнул на бетон. За спиной сомкнулись двери, и поезд-призрак растворился во мраке туннеля.\n\n"
+            "Станция «Узел связи» напоминала гигантский подземный дата-центр. Бесконечные ряды гудящих серверных стоек и мигающие индикаторы. "
+            "Посреди зала возвышался одинокий стол с главным терминалом. Экран заливал темноту ядовито-зеленым светом. А в самом конце зала виднелась огромная гермодверь.")
     
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    try:
+        photo = FSInputFile("bunker.jpg")
+        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
+        
     await callback.answer()
 
 # --- СЦЕНА 13: ГЕРМОДВЕРЬ (СМЕРТЬ И ПЕТЛЯ) ---
