@@ -114,27 +114,30 @@ async def scene_3_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 4: ВАННАЯ И ПЕЙДЖЕР ---
-# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ) ---
+# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
 @dp.callback_query(lambda c: c.data == "scene_4_bathroom")
 async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # 1. Сначала отправляем картинку пейджера
+    # 1. Сначала отправляем картинку
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
     await asyncio.sleep(2)
-    
     try:
-        # УБЕДИСЬ, ЧТО ИМЯ ФАЙЛА ТАКОЕ ЖЕ, КАК У ТЕБЯ НА GITHUB
         photo = FSInputFile("pager.jpg") 
         await callback.message.answer_photo(photo=photo)
     except Exception:
-        pass # Если картинки нет, скрипт просто пойдет дальше
+        pass 
         
-    # 2. А теперь имитируем запись голосового
+    # 2. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(4)
-    
+    try:
+        voice = FSInputFile("voice_bathroom.ogg") 
+        await callback.message.answer_voice(voice=voice)
+    except Exception:
+        pass 
+        
+    # 3. Отправляем нормальный широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Прочитать сообщение на пейджере", callback_data="scene_5_pager_read")
     kb.button(text="Забить на пейджер, искать оружие", callback_data="scene_5_search_weapon")
@@ -145,15 +148,9 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
             "Я лихорадочно огляделся в поисках хоть какого-то оружия, но взгляд зацепился за старую раковину. "
             "Там лежал винтажный пейджер. Он светился и тихо вибрировал.")
             
-    try:
-        # Отправляем аудио с текстом и кнопками
-        voice = FSInputFile("voice_bathroom.ogg")
-        await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
-    except Exception:
-        await callback.message.answer(text, reply_markup=kb.as_markup())
-        
+    await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
-
+    
 # --- СЦЕНА 4: НАПАДЕНИЕ У ДВЕРИ (СМЕРТЬ И ПЕТЛЯ) ---
 @dp.callback_query(lambda c: c.data == "scene_4_attack")
 async def scene_4_attack(callback: types.CallbackQuery):
@@ -175,16 +172,21 @@ async def scene_4_attack(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- ПЕРЕЗАПУСК ПЕТЛИ ---
-# --- ПЕРЕЗАПУСК ПЕТЛИ (С ГОЛОСОВЫМ) ---
+# --- ПЕРЕЗАПУСК ПЕТЛИ (ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
 @dp.callback_query(lambda c: c.data == "restart_loop")
 async def restart_loop(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # МАГИЯ: бот показывает статус "записывает голосовое"
+    # 1. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
-    # Ждем 4 секунды, чтобы игрок успел прочитать этот пугающий статус
     await asyncio.sleep(4)
-    
+    try:
+        voice = FSInputFile("voice_restart.ogg")
+        await callback.message.answer_voice(voice=voice)
+    except Exception:
+        pass # Если аудио нет, просто идем дальше
+        
+    # 2. Отправляем широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Ты под чем-то? Какая смерть?", callback_data="scene_2")
     kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
@@ -194,14 +196,7 @@ async def restart_loop(callback: types.CallbackQuery):
             "Я... я опять проснулся в кровати. Холодный пот льет ручьем. На часах 19:42. Я же только что умер! "
             "Контакт на проездном — это моя единственная зацепка. Помоги мне, иначе я так и буду умирать здесь вечно!")
     
-    try:
-        # Отправляем аудио. Telegram подхватит его как войс
-        voice = FSInputFile("voice_restart.ogg")
-        await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
-    except Exception:
-        # Если файл не загрузится, отправится просто текст
-        await callback.message.answer(text, reply_markup=kb.as_markup())
-        
+    await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
 # --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР (СЮЖЕТ) ---
@@ -553,15 +548,21 @@ async def scene_11_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (СЮЖЕТ) ---
-# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (С ГОЛОСОВЫМ) ---
+# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
 @dp.callback_query(lambda c: c.data == "scene_11_folder")
 async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
+    # 1. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(5)
-    
+    try:
+        voice = FSInputFile("voice_train.ogg")
+        await callback.message.answer_voice(voice=voice)
+    except Exception:
+        pass
+        
+    # 2. Отправляем широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Выйти на пустую платформу", callback_data="scene_12_platform")
     kb.button(text="Остаться в вагоне", callback_data="scene_12_stay")
@@ -572,12 +573,7 @@ async def scene_11_folder(callback: types.CallbackQuery):
             "зарегистрированными через Proton Mail, и даже глубокий анализ EXIF-метаданных моих личных фотографий.\n\n"
             "В этот момент поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
     
-    try:
-        voice = FSInputFile("voice_train.ogg")
-        await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
-    except Exception:
-        await callback.message.answer(text, reply_markup=kb.as_markup())
-        
+    await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
 # --- СЦЕНА 12: ОСТАТЬСЯ В ВАГОНЕ (СМЕРТЬ И ПЕТЛЯ) ---
