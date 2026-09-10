@@ -678,6 +678,33 @@ async def web_server():
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
 
+# --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА ТЕКСТА ОТ ИГРОКА ---
+@dp.message(lambda message: message.text)
+async def text_message_handler(message: types.Message):
+    text_lower = message.text.lower().strip()
+    
+    # Если игрок ввел правильный код 404
+    if "404" in text_lower:
+        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+        await asyncio.sleep(2)
+        
+        kb = InlineKeyboardBuilder()
+        kb.button(text="Лезть в узкое вентиляционное окно", callback_data="scene_6_vent")
+        kb.button(text="Схватить ножницы и ждать у двери", callback_data="scene_6_scissors")
+        kb.button(text="Спрятаться за шторкой для ванной", callback_data="scene_6_curtain")
+        kb.adjust(1)
+        
+        text = ("Я вбил код 404 на потертой клавиатуре пейджера. Раздался тихий щелчок, и экран мигнул. "
+                "На дисплее высветилось одно-единственное слово:\n\n"
+                "«БЕГИ»\n\n"
+                "Стекло в двери ванной с треском разлетелось. В образовавшуюся дыру просунулась рука в черной перчатке и начала нащупывать задвижку шпингалета. У меня остались секунды!")
+        
+        await message.answer(text, reply_markup=kb.as_markup())
+        
+    # Если игрок ввел любой другой текст
+    else:
+        await message.answer("Ничего не произошло. Кажется, код неверный или сейчас не время для этого.")
+
 async def main():
     # Запускаем веб-сервер и бота одновременно
     asyncio.create_task(web_server())
