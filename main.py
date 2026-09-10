@@ -385,34 +385,35 @@ async def scene_4_yard(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 7: МЕТРО ВАСИЛЕОСТРОВСКАЯ (СЮЖЕТ И ЖЕТОН) ---
+# --- СЦЕНА 7: ПОБЕГ В МЕТРО И НАХОДКА ЖЕТОНА ---
 @dp.callback_query(lambda c: c.data == "scene_7_subway")
 async def scene_7_subway(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # Меняем статус бота на "отправляет фото"
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
-    await asyncio.sleep(4)
+    await asyncio.sleep(2)
+    try:
+        photo = FSInputFile("token.jpg")
+        await callback.message.answer_photo(photo=photo)
+    except Exception:
+        pass 
+        
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(3)
     
     kb = InlineKeyboardBuilder()
-    kb.button(text="Спуститься в подземный переход", callback_data="scene_8_underground")
-    kb.button(text="Осмотреть телефонную будку у входа", callback_data="scene_8_booth")
+    kb.button(text="Закинуть жетон в турникет", callback_data="scene_9_token")
+    kb.button(text="Оглянуться назад на улицу", callback_data="scene_8_look_back") # Если этой сцены нет, можешь убрать эту кнопку
     kb.adjust(1)
     
-    text = ("Я рванул через дворы, перемахивая через лужи и пугая редких бродячих собак. Сердце колотилось в горле. "
-            "Наконец, впереди показался массивный козырек станции метро «Василеостровская». Двери были закрыты — станция не работает. \n\n"
-            "Я подошел ближе. На каменном парапете у входа, прямо под тусклым фонарем, лежал абсолютно черный, матовый металлический жетон метрополитена. "
-            "Под ним клочок бумаги, размокший от дождя. На нем корявым почерком: «Спускайся. Они боятся темноты».\n\n"
-            "Я сжал холодный жетон в кулаке. Куда идти дальше?")
+    text = ("Я вылетел из парадной, чуть не сорвав дверь с петель, и рванул под проливной дождь. "
+            "Ноги сами несли меня к светящейся букве «М» у станции «Василеостровская». Вестибюль был абсолютно пуст. "
+            "Ни дежурной, ни пассажиров. Только гул эскалаторов где-то внизу.\n\n"
+            "Я лихорадочно сунул руку в карман мокрой куртки, чтобы достать проездной, но пальцы нащупали что-то холодное и тяжелое. "
+            "Я вытащил руку. На ладони лежал матово-черный жетон без опознавательных знаков. Откуда он взялся? "
+            "Позади, со стороны улицы, послышался звук тяжелых шагов, хлюпающих по лужам. Он шел за мной.")
             
-    try:
-        # ИМЯ ФАЙЛА КАРТИНКИ (УБЕДИСЬ, ЧТО ОНО СОВПАДАЕТ С GITHUB)
-        photo = FSInputFile("token.jpg")
-        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
-    except Exception:
-        # Если картинка не прогрузится, бот пришлет хотя бы текст
-        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
-        
+    await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
 # --- СЦЕНА 8: ТЕЛЕФОННАЯ БУДКА (СМЕРТЬ И ПЕТЛЯ) ---
