@@ -14,18 +14,32 @@ dp = Dispatcher()
 # --- СЦЕНА 1: ПРОБУЖДЕНИЕ ---
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
+    # 1. Отправляем стартовую картинку (OIG2.jpg)
+    await bot.send_chat_action(chat_id=message.chat.id, action="upload_photo")
+    await asyncio.sleep(2)
+    try:
+        photo = FSInputFile("OIG2.jpg")
+        await message.answer_photo(photo=photo)
+    except Exception:
+        pass # Если фотки нет, просто идем дальше
+        
+    # 2. Имитируем набор текста
     await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-    await asyncio.sleep(2) 
-    
+    await asyncio.sleep(2)
+
     kb = InlineKeyboardBuilder()
     kb.button(text="Ты под чем-то? Какая смерть?", callback_data="scene_2")
     kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
-    kb.adjust(1) 
-    
+    kb.adjust(1)
+
+    # 3. Объединенный текст: обращение к игроку + атмосфера
     text = ("Слушай, я не знаю, кто ты. Твой контакт был нацарапан на обратной стороне моего проездного. "
-            "Если это чья-то больная шутка, то мне ни черта не смешно. Я... я только что умер. "
-            "И снова проснулся у себя в квартире. На Васильевском острове.")
-    
+            "Если это чья-то больная шутка, то мне ни черта не смешно. Я... я только что умер.\n\n"
+            "Я резко открыл глаза. Сердце колотилось где-то в горле, а тело пробил ледяной пот. "
+            "За окном шумел ночной Лиговский проспект. Дождь хлестал по мутному стеклу, размывая свет тусклых фонарей.\n\n"
+            "Голова раскалывалась от фантомной боли. Я посмотрел на свои пустые, дрожащие руки. "
+            "Внезапно в коридоре раздался тихий скрип половицы. В квартире кто-то есть.")
+
     await message.answer(text, reply_markup=kb.as_markup())
 
 # --- СЦЕНА 2: АВАРИЯ (С ФОТО) ---
