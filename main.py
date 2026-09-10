@@ -162,12 +162,15 @@ async def scene_4_attack(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- ПЕРЕЗАПУСК ПЕТЛИ ---
+# --- ПЕРЕЗАПУСК ПЕТЛИ (С ГОЛОСОВЫМ) ---
 @dp.callback_query(lambda c: c.data == "restart_loop")
 async def restart_loop(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(2)
+    # МАГИЯ: бот показывает статус "записывает голосовое"
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
+    # Ждем 4 секунды, чтобы игрок успел прочитать этот пугающий статус
+    await asyncio.sleep(4)
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Ты под чем-то? Какая смерть?", callback_data="scene_2")
@@ -175,10 +178,17 @@ async def restart_loop(callback: types.CallbackQuery):
     kb.adjust(1) 
     
     text = ("*СНОВА ЭТОТ КОШМАР*\n\n"
-            "Я... я опять проснулся в кровати. Холодный пот льет ручьем. На часах 19:42. Я же только что умер в подъезде! "
-            "Слушай, контакт на проездном — это моя единственная зацепка. Помоги мне, иначе я так и буду умирать здесь вечно!")
+            "Я... я опять проснулся в кровати. Холодный пот льет ручьем. На часах 19:42. Я же только что умер! "
+            "Контакт на проездном — это моя единственная зацепка. Помоги мне, иначе я так и буду умирать здесь вечно!")
     
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    try:
+        # Отправляем аудио. Telegram подхватит его как войс
+        voice = FSInputFile("voice_restart.mp3")
+        await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        # Если файл не загрузится, отправится просто текст
+        await callback.message.answer(text, reply_markup=kb.as_markup())
+        
     await callback.answer()
 
 # --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР (СЮЖЕТ) ---
@@ -531,25 +541,30 @@ async def scene_11_window(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- СЦЕНА 11: ПАПКА С ДОСЬЕ (СЮЖЕТ) ---
+# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (С ГОЛОСОВЫМ) ---
 @dp.callback_query(lambda c: c.data == "scene_11_folder")
 async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
+    
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
+    await asyncio.sleep(5)
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Выйти на пустую платформу", callback_data="scene_12_platform")
     kb.button(text="Остаться в вагоне", callback_data="scene_12_stay")
     kb.adjust(1)
     
-    text = ("Я отвернулся от пугающего окна и открыл папку. Внутри было мое досье. Но не полицейское. "
-            "Кто-то буквально препарировал мою цифровую жизнь: логи настроек моих приватных браузеров, схемы с фейковыми аккаунтами на Reddit, "
+    text = ("Я открыл папку. Внутри было мое досье. Но не полицейское. "
+            "Кто-то буквально препарировал мою цифровую жизнь: логи настроек приватных браузеров, схемы с фейковыми аккаунтами на Reddit, "
             "зарегистрированными через Proton Mail, и даже глубокий анализ EXIF-метаданных моих личных фотографий.\n\n"
-            "Они использовали продвинутые методы разведки по открытым источникам, чтобы отследить каждый мой шаг в сети. "
-            "Под кипой распечаток лежал старый бумажный билет, на котором было выбито: «Конечная. Узел связи». \n\n"
             "В этот момент поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
     
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    try:
+        voice = FSInputFile("voice_train.mp3")
+        await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
+    except Exception:
+        await callback.message.answer(text, reply_markup=kb.as_markup())
+        
     await callback.answer()
 
 # --- СЦЕНА 12: ОСТАТЬСЯ В ВАГОНЕ (СМЕРТЬ И ПЕТЛЯ) ---
