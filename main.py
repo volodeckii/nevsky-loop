@@ -114,7 +114,7 @@ async def scene_3_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
+# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ЗАГАДКА) ---
 @dp.callback_query(lambda c: c.data == "scene_4_bathroom")
 async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
@@ -136,14 +136,15 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
         pass 
         
     kb = InlineKeyboardBuilder()
-    kb.button(text="Прочитать сообщение на пейджере", callback_data="scene_5_pager_read")
+    # УБРАЛИ кнопку "Прочитать пейджер", оставили только альтернативу
     kb.button(text="Забить на пейджер, искать оружие", callback_data="scene_5_search_weapon")
     kb.adjust(1)
     
-    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
     text = ("Я влетел в ванную, защелкнул шпингалет и сполз по кафельной стене на пол. Сердце колотилось так, что закладывало уши. "
             "Дверь в квартиру с треском вылетела. Я трясущимися руками достал телефон и нажал на запись диктофона — на случай, если не выберусь. \n\n"
-            "И тут в звенящей тишине раздался писк. В пустой, грязной раковине лежал старый пейджер. Экран светился в темноте.")
+            "И тут в звенящей тишине раздался писк. В пустой, грязной раковине лежал старый пейджер. Экран светился в темноте. "
+            "Я присмотрелся... На его затертом корпусе виднелась полустертая белая наклейка с какими-то цифрами. Возможно, это код разблокировки.\n\n"
+            "*(Откройте фотографию пейджера, найдите код на корпусе и отправьте его боту текстовым сообщением)*")
             
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
