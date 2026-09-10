@@ -114,12 +114,11 @@ async def scene_3_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
+# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
 @dp.callback_query(lambda c: c.data == "scene_4_bathroom")
 async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # 1. Сначала отправляем картинку
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
     await asyncio.sleep(2)
     try:
@@ -128,7 +127,6 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
     except Exception:
         pass 
         
-    # 2. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(4)
     try:
@@ -137,16 +135,15 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
     except Exception:
         pass 
         
-    # 3. Отправляем нормальный широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Прочитать сообщение на пейджере", callback_data="scene_5_pager_read")
     kb.button(text="Забить на пейджер, искать оружие", callback_data="scene_5_search_weapon")
     kb.adjust(1)
     
-    text = ("Я влетел в ванную и защелкнул хлипкий шпингалет. Входная дверь в квартиру с грохотом вылетела. "
-            "Он внутри. Тяжелые шаги медленно направились по коридору.\n\n"
-            "Я лихорадочно огляделся в поисках хоть какого-то оружия, но взгляд зацепился за старую раковину. "
-            "Там лежал винтажный пейджер. Он светился и тихо вибрировал.")
+    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
+    text = ("Я влетел в ванную, защелкнул шпингалет и сполз по кафельной стене на пол. Сердце колотилось так, что закладывало уши. "
+            "Дверь в квартиру с треском вылетела. Я трясущимися руками достал телефон и нажал на запись диктофона — на случай, если не выберусь. \n\n"
+            "И тут в звенящей тишине раздался писк. В пустой, грязной раковине лежал старый пейджер. Экран светился в темноте.")
             
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
@@ -171,30 +168,29 @@ async def scene_4_attack(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- ПЕРЕЗАПУСК ПЕТЛИ ---
-# --- ПЕРЕЗАПУСК ПЕТЛИ (ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
+# --- ПЕРЕЗАПУСК ПЕТЛИ (ТОЛЬКО ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
 @dp.callback_query(lambda c: c.data == "restart_loop")
 async def restart_loop(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # 1. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(4)
     try:
         voice = FSInputFile("voice_restart.ogg")
         await callback.message.answer_voice(voice=voice)
     except Exception:
-        pass # Если аудио нет, просто идем дальше
+        pass 
         
-    # 2. Отправляем широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Ты под чем-то? Какая смерть?", callback_data="scene_2")
     kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
     kb.adjust(1) 
     
+    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
     text = ("*СНОВА ЭТОТ КОШМАР*\n\n"
-            "Я... я опять проснулся в кровати. Холодный пот льет ручьем. На часах 19:42. Я же только что умер! "
-            "Контакт на проездном — это моя единственная зацепка. Помоги мне, иначе я так и буду умирать здесь вечно!")
+            "Я резко сел на кровати, жадно хватая ртом воздух. Грудь горела, словно там всё ещё торчало лезвие, хотя кожа была целой. "
+            "Холодный пот заливал глаза. На часах снова 19:42. Я схватил телефон и записал аудиосообщение своему единственному контакту, "
+            "пытаясь зафиксировать хоть что-то, пока этот животный ужас не выветрился из головы.")
     
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
@@ -548,12 +544,11 @@ async def scene_11_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (ГОЛОСОВОЕ + ШИРОКИЙ ТЕКСТ) ---
+# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (ТОЛЬКО ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
 @dp.callback_query(lambda c: c.data == "scene_11_folder")
 async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    # 1. Имитируем запись и отправляем ТОЛЬКО голосовое
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(5)
     try:
@@ -562,16 +557,16 @@ async def scene_11_folder(callback: types.CallbackQuery):
     except Exception:
         pass
         
-    # 2. Отправляем широкий текст с кнопками
     kb = InlineKeyboardBuilder()
     kb.button(text="Выйти на пустую платформу", callback_data="scene_12_platform")
     kb.button(text="Остаться в вагоне", callback_data="scene_12_stay")
     kb.adjust(1)
     
-    text = ("Я открыл папку. Внутри было мое досье. Но не полицейское. "
-            "Кто-то буквально препарировал мою цифровую жизнь: логи настроек приватных браузеров, схемы с фейковыми аккаунтами на Reddit, "
-            "зарегистрированными через Proton Mail, и даже глубокий анализ EXIF-метаданных моих личных фотографий.\n\n"
-            "В этот момент поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
+    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
+    text = ("Поезд мчался сквозь темноту с глухим, неестественным гулом. Я открыл пухлую картонную папку, лежащую на сиденье, "
+            "и пробежался глазами по первым страницам. Внутри всё похолодело. \n\n"
+            "Я нажал кнопку отправки голосового сообщения. Кто бы ни был на другом конце — он должен знать масштабы того дерьма, в которое я вляпался. "
+            "Едва я успел договорить, как поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
     
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
