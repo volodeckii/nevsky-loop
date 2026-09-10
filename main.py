@@ -114,7 +114,7 @@ async def scene_3_window(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ФОТО + ГОЛОСОВОЕ + ОРГАНИЧНАЯ ЗАГАДКА) ---
+# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ПРОСТО НАХОДИМ ПЕЙДЖЕР) ---
 @dp.callback_query(lambda c: c.data == "scene_4_bathroom")
 async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
@@ -136,14 +136,13 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
         pass 
         
     kb = InlineKeyboardBuilder()
+    kb.button(text="Прочитать сообщение на пейджере", callback_data="scene_5_pager_read")
     kb.button(text="Забить на пейджер, искать оружие", callback_data="scene_5_search_weapon")
     kb.adjust(1)
     
-    # НОВЫЙ ТЕКСТ: Никаких дублей и прямых подсказок
     text = ("Отправив аудиосообщение, я бросил телефон в карман. Дверная ручка в ванную дернулась.\n\n"
-            "Мой взгляд снова упал на пейджер. Экран мигал, требуя пароль для расшифровки входящего. "
-            "Я присмотрелся. На грязном пластиковом корпусе виднелась полустертая наклейка с цифрами. "
-            "Возможно, если ввести их прямо сейчас, я успею узнать, кто пытается со мной связаться...")
+            "Мой взгляд снова упал на пейджер. Экран призывно мигал. На грязном пластиковом корпусе виднелась полустертая наклейка с цифрами. "
+            "Наверное, инвентарный номер какого-то старого оборудования. Нужно скорее посмотреть, что пришло, пока он не вышиб дверь!")
             
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
@@ -195,7 +194,7 @@ async def restart_loop(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР (СЮЖЕТ) ---
+# --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР ---
 @dp.callback_query(lambda c: c.data == "scene_5_pager_read")
 async def scene_5_pager_read(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
@@ -203,14 +202,14 @@ async def scene_5_pager_read(callback: types.CallbackQuery):
     await asyncio.sleep(3)
     
     kb = InlineKeyboardBuilder()
-    kb.button(text="Лезть в узкое вентиляционное окно под потолком", callback_data="scene_6_vent")
-    kb.button(text="Спрятаться в самой ванной за шторкой", callback_data="scene_6_hide")
+    kb.button(text="Лезть в узкое вентиляционное окно", callback_data="scene_6_vent")
+    kb.button(text="Схватить ножницы и ждать у двери", callback_data="scene_6_scissors")
+    kb.button(text="Спрятаться за шторкой для ванной", callback_data="scene_6_curtain")
     kb.adjust(1)
     
-    text = ("Я дрожащими руками хватаю пейджер. На узком зеленоватом экране светится сообщение:\n\n"
-            "«ОНИ ЗНАЮТ О ПЕТЛЕ. УХОДИ. ИЩИ ЧЕРНЫЙ ЖЕТОН У МЕТРО ВАСИЛЕОСТРОВСКАЯ»\n\n"
-            "В этот момент хлипкая дверь ванной содрогается от чудовищного удара. Дерево трещит. "
-            "Еще один удар — и он ворвется сюда. У меня есть считанные секунды!")
+    text = ("Я нажал единственную рабочую кнопку на пейджере. На зеленоватом дисплее высветилось одно-единственное слово:\n\n"
+            "«БЕГИ»\n\n"
+            "В этот же момент стекло в двери ванной с треском разлетелось. В образовавшуюся дыру просунулась рука в черной перчатке и начала нащупывать задвижку шпингалета. У меня остались секунды!")
     
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
@@ -633,30 +632,19 @@ async def scene_13_door(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 13: ГЛАВНЫЙ ТЕРМИНАЛ (КЛИФФХЭНГЕР - КОНЕЦ 1 АКТА) ---
+# --- СЦЕНА 13: ГЛАВНЫЙ ТЕРМИНАЛ (ЗАПРОС ПАРОЛЯ) ---
 @dp.callback_query(lambda c: c.data == "scene_13_terminal")
 async def scene_13_terminal(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(5)
+    await asyncio.sleep(4)
     
-    # Кнопки для будущего платного продолжения
-    kb = InlineKeyboardBuilder()
-    kb.button(text="🔒 Разблокировать Эпизод 2", callback_data="buy_premium")
-    kb.button(text="Начать Эпизод 1 сначала", callback_data="restart_loop")
-    kb.adjust(1)
+    text = ("Я подошел к терминалу. На зеленом экране мерцала командная строка.\n\n"
+            "«СИСТЕМА ЗАБЛОКИРОВАНА. ВВЕДИТЕ ТРЕХЗНАЧНЫЙ СЕРВИСНЫЙ КОД УСТРОЙСТВА СВЯЗИ»\n\n"
+            "Устройство связи? Я лихорадочно начал вспоминать. В самом начале... тот старый пейджер в раковине! На его корпусе была белая наклейка с цифрами. Какой там был номер?\n\n"
+            "*(Отправьте код боту текстовым сообщением)*")
     
-    text = ("Я подошел к терминалу. На зеленом экране бежали бесконечные строки кода — имена, адреса, геолокации, проценты вероятностей. "
-            "Это был массив данных о жизнях миллионов людей. \n\n"
-            "Я положил руки на клавиатуру, и экран внезапно мигнул. Текст пропал, сменившись одной-единственной мерцающей фразой:\n\n"
-            "«ОШИБКА АНОНИМИЗАЦИИ. ОБЪЕКТ ВЫШЕЛ ИЗ-ПОД КОНТРОЛЯ. ЗАПУСК ПРОТОКОЛА ЗАЧИСТКИ»\n\n"
-            "Позади меня раздался звук, от которого кровь стынет в жилах. Лязг взводимого затвора. Тот самый человек в черном дождевике стоял всего в пяти шагах. "
-            "Он снял капюшон, и я увидел лицо, которое не должен был увидеть никогда...\n\n"
-            "***\n"
-            "**КОНЕЦ ПЕРВОГО ЭПИЗОДА**\n"
-            "Вы достигли конца доступной бесплатной версии. Чтобы узнать, чье лицо скрывал капюшон, выбраться из симуляции и раскрыть масштабный заговор, требуется уровень доступа «Премиум».")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await callback.message.answer(text)
     await callback.answer()
 
 # --- ЗАГЛУШКА ДЛЯ ПРЕМИУМА ---
@@ -677,32 +665,34 @@ async def web_server():
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
 
-# --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА ТЕКСТА ОТ ИГРОКА ---
+# --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА КОДА 404 ---
 @dp.message(lambda message: message.text)
 async def text_message_handler(message: types.Message):
     text_lower = message.text.lower().strip()
     
-    # Если игрок ввел правильный код 404
+    # Если ввели правильный код
     if "404" in text_lower:
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        await asyncio.sleep(2)
+        await asyncio.sleep(4)
         
         kb = InlineKeyboardBuilder()
-        kb.button(text="Лезть в узкое вентиляционное окно", callback_data="scene_6_vent")
-        kb.button(text="Схватить ножницы и ждать у двери", callback_data="scene_6_scissors")
-        kb.button(text="Спрятаться за шторкой для ванной", callback_data="scene_6_curtain")
+        kb.button(text="🔒 Разблокировать Эпизод 2", callback_data="buy_premium")
+        kb.button(text="Начать Эпизод 1 сначала", callback_data="restart_loop")
         kb.adjust(1)
         
-        text = ("Я вбил код 404 на потертой клавиатуре пейджера. Раздался тихий щелчок, и экран мигнул. "
-                "На дисплее высветилось одно-единственное слово:\n\n"
-                "«БЕГИ»\n\n"
-                "Стекло в двери ванной с треском разлетелось. В образовавшуюся дыру просунулась рука в черной перчатке и начала нащупывать задвижку шпингалета. У меня остались секунды!")
+        text = ("Я вбил код 404 на клавиатуре. Экран мигнул, и зеленые строки кода побежали вниз водопадом — имена, адреса, геолокации... Мои данные. Моя жизнь.\n\n"
+                "Внезапно текст пропал, сменившись пульсирующей красной фразой:\n\n"
+                "«ОШИБКА АНОНИМИЗАЦИИ. ОБЪЕКТ ВЫШЕЛ ИЗ-ПОД КОНТРОЛЯ. ЗАПУСК ПРОТОКОЛА ЗАЧИСТКИ»\n\n"
+                "Позади меня раздался звук, от которого кровь стынет в жилах. Лязг взводимого затвора. Тот самый человек в черном дождевике стоял всего в пяти шагах. "
+                "Он снял капюшон, и я увидел лицо, которое не должен был увидеть никогда...\n\n"
+                "***\n"
+                "**КОНЕЦ ПЕРВОГО ЭПИЗОДА**\n"
+                "Вы достигли конца доступной версии. Чтобы узнать, чье лицо скрывал капюшон, требуется уровень доступа «Премиум».")
         
         await message.answer(text, reply_markup=kb.as_markup())
         
-    # Если игрок ввел любой другой текст
     else:
-        await message.answer("Ничего не произошло. Кажется, код неверный или сейчас не время для этого.")
+        await message.answer("«НЕВЕРНЫЙ КОД. В ДОСТУПЕ ОТКАЗАНО». Нужно вспомнить цифры на том пейджере...")
 
 async def main():
     # Запускаем веб-сервер и бота одновременно
