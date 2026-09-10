@@ -147,7 +147,7 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
             
     try:
         # Отправляем аудио с текстом и кнопками
-        voice = FSInputFile("voice_bathroom.mp3")
+        voice = FSInputFile("voice_bathroom.ogg")
         await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
     except Exception:
         await callback.message.answer(text, reply_markup=kb.as_markup())
@@ -196,7 +196,7 @@ async def restart_loop(callback: types.CallbackQuery):
     
     try:
         # Отправляем аудио. Telegram подхватит его как войс
-        voice = FSInputFile("voice_restart.mp3")
+        voice = FSInputFile("voice_restart.ogg")
         await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
     except Exception:
         # Если файл не загрузится, отправится просто текст
@@ -573,7 +573,7 @@ async def scene_11_folder(callback: types.CallbackQuery):
             "В этот момент поезд издал пронзительный визг тормозов. Двери с шипением открылись в полумрак неизвестной станции.")
     
     try:
-        voice = FSInputFile("voice_train.mp3")
+        voice = FSInputFile("voice_train.ogg")
         await callback.message.answer_voice(voice=voice, caption=text, reply_markup=kb.as_markup())
     except Exception:
         await callback.message.answer(text, reply_markup=kb.as_markup())
