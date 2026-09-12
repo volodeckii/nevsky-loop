@@ -56,14 +56,23 @@ async def cmd_info(message: types.Message):
             
     await message.answer(text, parse_mode="Markdown")
 
-# --- СЦЕНА 2: АВАРИЯ (С ФОТО) ---
+# --- СЦЕНА 2: АВАРИЯ (ТОЛЬКО ГОЛОСОВОЕ) ---
 @dp.callback_query(lambda c: c.data == "scene_2")
 async def scene_2(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
+    # Отправляем ТОЛЬКО голосовое (Без фото!)
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
     await asyncio.sleep(3)
-    
+    try:
+        voice = FSInputFile("voice_restart.ogg") 
+        await callback.message.answer_voice(voice=voice)
+    except Exception:
+        pass 
+        
+    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
+    await asyncio.sleep(2)
+        
     kb = InlineKeyboardBuilder()
     kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3_peephole")
     kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3_knife")
@@ -74,12 +83,7 @@ async def scene_2(callback: types.CallbackQuery):
             "Дождь за окном стучит точно так же. Время на электронных часах — 19:42. Ровно за час до аварии.\n\n"
             "Бляха... Кто-то ломится в дверь. Стучат так, что штукатурка сыплется. Что делать?!")
             
-    try:
-        photo = FSInputFile("OIG2.jpg")
-        await callback.message.answer_photo(photo=photo, caption=text, reply_markup=kb.as_markup())
-    except Exception:
-        await callback.message.answer(f"Текст:\n\n{text}", reply_markup=kb.as_markup())
-        
+    await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
 # --- СЦЕНА 3: ГЛАЗОК ---
