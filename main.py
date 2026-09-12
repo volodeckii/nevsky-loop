@@ -80,19 +80,10 @@ async def trigger_death(callback: types.CallbackQuery, death_text: str):
     
     await msg.edit_text("Вы погибли. Петля замкнулась.\n\nНажмите кнопку ниже, чтобы начать заново.", reply_markup=kb.as_markup())
 
-# --- СЦЕНА 2: АВАРИЯ (ТОЛЬКО ГОЛОСОВОЕ) ---
+# --- СЦЕНА 2: АВАРИЯ (БЫСТРАЯ СЦЕНА, БЕЗ АУДИО) ---
 @dp.callback_query(lambda c: c.data == "scene_2")
 async def scene_2(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
-    
-    # Отправляем ТОЛЬКО голосовое (Без фото!)
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="record_voice")
-    await asyncio.sleep(3)
-    try:
-        voice = FSInputFile("voice_restart.ogg") 
-        await callback.message.answer_voice(voice=voice)
-    except Exception:
-        pass 
         
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
     await asyncio.sleep(2)
@@ -100,7 +91,7 @@ async def scene_2(callback: types.CallbackQuery):
     kb = InlineKeyboardBuilder()
     kb.button(text="Посмотри в глазок. Только тихо!", callback_data="scene_3_peephole")
     kb.button(text="Хватай нож и спроси, кто там!", callback_data="scene_3_knife")
-    kb.button(text="Бей окно, лезь на пожарную лестницу!", callback_data="scene_3_window")
+    kb.button(text="Бей окно, лезь на лестницу!", callback_data="scene_3_window")
     kb.adjust(1)
     
     text = ("Я переходил Лиговский. Визг тормозов, удар, хруст... и темнота. А потом резкий вдох — и я лежу в своей кровати. "
