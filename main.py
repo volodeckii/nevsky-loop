@@ -150,24 +150,15 @@ async def scene_3_knife(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 3: ПОЖАРНАЯ ЛЕСТНИЦА ---
+# --- СМЕРТЬ: ПРЫЖОК В ОКНО ---
 @dp.callback_query(lambda c: c.data == "scene_3_window")
 async def scene_3_window(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Лезть наверх, на крышу", callback_data="scene_4_roof")
-    kb.button(text="Спускаться вниз, в темный двор", callback_data="scene_4_yard")
-    kb.adjust(1)
-    
-    text = ("Я схватил тяжелую табуретку и со всего размаху всадил ее в окно. Стекло брызнуло во все стороны. Холодный ливень ударил прямо в лицо. "
-            "Я перекинул ноги через подоконник и вцепился в ржавые прутья пожарной лестницы. \n\n"
-            "В этот самый момент входная дверь в квартиру с треском вылетела. Я успел заметить в коридоре высокую фигуру в черном дождевике, прежде чем начать двигаться. "
-            "Металл скользкий от дождя, руки дрожат. Куда рвануть?")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    text = ("Я разбил стекло табуреткой и попытался вылезти на ржавую пожарную лестницу. "
+            "Подошва скользнула на мокром от дождя металле. Пальцы сорвались. "
+            "Ветер свистнул в ушах, и мокрый асфальт Лиговского стремительно бросился мне навстречу. Удар. Темнота...")
+            
+    # Снова используем ту же функцию!
+    await trigger_death(callback, text)
     await callback.answer()
 
 # --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ПРОСТО НАХОДИМ ПЕЙДЖЕР) ---
@@ -203,24 +194,16 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
     
-# --- СЦЕНА 4: НАПАДЕНИЕ У ДВЕРИ (СМЕРТЬ И ПЕТЛЯ) ---
+# --- СМЕРТЬ: АТАКА НА КИЛЛЕРА ---
 @dp.callback_query(lambda c: c.data == "scene_4_attack")
 async def scene_4_attack(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Я рванул замок и со всей силы толкнул дверь плечом. Тяжелое деревянное полотно с хрустом впечаталось в фигуру в дождевике. "
-            "Он пошатнулся, но не упал. Я с рычанием бросился на него, целясь в шею, но его реакция была нечеловеческой. \n\n"
+            "Он пошатнулся, но не упал. Я с рычанием бросился на него, целясь в шею, но его реакция была нечеловеческой.\n\n"
             "Взмах руки в черной перчатке. Короткая вспышка тусклого света на лезвии. Жгучая, невыносимая боль пронзила грудь. "
-            "Я осел на грязный кафель подъезда, захлебываясь. Черный капюшон склонился надо мной. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+            "Я осел на грязный кафель, захлебываясь. Черный капюшон склонился надо мной. Темнота...")
+            
+    # Запускаем нашу универсальную функцию!
+    await trigger_death(callback, text)
     await callback.answer()
 
 # --- ПЕРЕЗАПУСК ПЕТЛИ (ТОЛЬКО ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
