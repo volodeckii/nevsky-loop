@@ -56,6 +56,30 @@ async def cmd_info(message: types.Message):
             
     await message.answer(text, parse_mode="Markdown")
 
+# --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ СМЕРТИ (ГЛИТЧ И ПЕРЕЗАПУСК) ---
+async def trigger_death(callback: types.CallbackQuery, death_text: str):
+    # Убираем кнопки
+    await callback.message.edit_reply_markup(reply_markup=None) 
+    
+    # Печатаем уникальный текст смерти (как именно он умер в этот раз)
+    msg = await callback.message.answer(death_text)
+    
+    # Тот самый крутой эффект глитча
+    await asyncio.sleep(3)
+    await msg.edit_text("🩸 `СИНХРОНИЗАЦИЯ ПРЕРВАНА...`", parse_mode="Markdown")
+    await asyncio.sleep(1.2)
+    await msg.edit_text("💀 `ЖИЗНЕННЫЕ ПОКАЗАТЕЛИ: НУЛЬ.`", parse_mode="Markdown")
+    await asyncio.sleep(1.2)
+    await msg.edit_text("⏳ `ИНИЦИАЛИЗАЦИЯ ПЕРЕЗАПУСКА ПЕТЛИ...`", parse_mode="Markdown")
+    await asyncio.sleep(2)
+    
+    # Выводим кнопку возврата
+    kb = InlineKeyboardBuilder()
+    kb.button(text="🔄 Проснуться снова", callback_data="restart_loop")
+    kb.adjust(1)
+    
+    await msg.edit_text("Вы погибли. Петля замкнулась.\n\nНажмите кнопку ниже, чтобы начать заново.", reply_markup=kb.as_markup())
+
 # --- СЦЕНА 2: АВАРИЯ (ТОЛЬКО ГОЛОСОВОЕ) ---
 @dp.callback_query(lambda c: c.data == "scene_2")
 async def scene_2(callback: types.CallbackQuery):
