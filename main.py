@@ -11,33 +11,18 @@ TOKEN = "8658859502:AAEa1fsHa-5GhhF5Jag1Kpr4D8CMFgEg8Z4"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# --- СЦЕНА 1: ПРОБУЖДЕНИЕ ---
+# --- СЦЕНА 1: ПРОБУЖДЕНИЕ (/start) ---
 @dp.message(Command("start"))
-# --- ИНФОРМАЦИЯ ОБ ИГРЕ ---
-@dp.message(Command("info"))
-async def cmd_info(message: types.Message):
-    text = ("🌆 **Петля Невы** — это интерактивный текстовый хоррор-квест.\n\n"
-            "Вы застряли во временной петле. Ваша задача — выжить, принимая решения, и узнать, кто за вами охотится.\n\n"
-            "**Как играть:**\n"
-            "1. Внимательно читайте тексты и слушайте голосовые сообщения.\n"
-            "2. Изучайте фотографии — иногда ключи к разгадке (например, коды паролей) скрыты прямо на них.\n"
-            "3. Используйте логику, чтобы сбежать.\n\n"
-            "Команды:\n"
-            "/start — Начать/перезапустить игру\n"
-            "/info — Правила игры")
-            
-    await message.answer(text, parse_mode="Markdown")
 async def cmd_start(message: types.Message):
-    # 1. Отправляем стартовую картинку (OIG2.jpg)
+    # Отправляем стартовую картинку (OIG2.jpg)
     await bot.send_chat_action(chat_id=message.chat.id, action="upload_photo")
     await asyncio.sleep(2)
     try:
         photo = FSInputFile("OIG2.jpg")
         await message.answer_photo(photo=photo)
     except Exception:
-        pass # Если фотки нет, просто идем дальше
+        pass 
         
-    # 2. Имитируем набор текста
     await bot.send_chat_action(chat_id=message.chat.id, action="typing")
     await asyncio.sleep(2)
 
@@ -46,7 +31,6 @@ async def cmd_start(message: types.Message):
     kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
     kb.adjust(1)
 
-    # 3. Объединенный текст: обращение к игроку + атмосфера
     text = ("Слушай, я не знаю, кто ты. Твой контакт был нацарапан на обратной стороне моего проездного. "
             "Если это чья-то больная шутка, то мне ни черта не смешно. Я... я только что умер.\n\n"
             "Я резко открыл глаза. Сердце колотилось где-то в горле, а тело пробил ледяной пот. "
@@ -55,6 +39,22 @@ async def cmd_start(message: types.Message):
             "Внезапно в коридоре раздался тихий скрип половицы. В квартире кто-то есть.")
 
     await message.answer(text, reply_markup=kb.as_markup())
+
+
+# --- ИНФОРМАЦИЯ ОБ ИГРЕ (/info) ---
+@dp.message(Command("info"))
+async def cmd_info(message: types.Message):
+    text = ("🌆 **Петля Невы** — это интерактивный текстовый хоррор-квест.\n\n"
+            "Вы застряли во временной петле. Ваша задача — выжить, принимая решения, и узнать, кто за вами охотится.\n\n"
+            "**Как играть:**\n"
+            "1. Внимательно читайте тексты и слушайте голосовые сообщения.\n"
+            "2. Изучайте фотографии — иногда ключи к разгадке скрыты прямо на них.\n"
+            "3. Используйте логику, чтобы сбежать.\n\n"
+            "Команды:\n"
+            "/start — Начать/перезапустить игру\n"
+            "/info — Правила игры")
+            
+    await message.answer(text, parse_mode="Markdown")
 
 # --- СЦЕНА 2: АВАРИЯ (С ФОТО) ---
 @dp.callback_query(lambda c: c.data == "scene_2")
