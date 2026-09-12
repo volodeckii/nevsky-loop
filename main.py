@@ -667,7 +667,54 @@ async def scene_13_terminal(callback: types.CallbackQuery):
 async def buy_premium(callback: types.CallbackQuery):
     await callback.answer("Функция оплаты находится в разработке! Следите за обновлениями.", show_alert=True)
 
-# Заглушка веб-сервера для Render (чтобы сервис не засыпал)
+# --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА ТЕКСТА (С ЭФФЕКТОМ ВЗЛОМА) ---
+# ВАЖНО: Этот блок ловит любой текст от пользователя, поэтому он должен быть последним из всех сценариев!
+@dp.message(lambda message: message.text)
+async def text_message_handler(message: types.Message):
+    text_lower = message.text.lower().strip()
+    
+    # Если ввели правильный код
+    if "404" in text_lower:
+        # Эффект взлома терминала (меняющийся текст)
+        status_msg = await message.answer("🖥 `Инициализация протокола доступа...`", parse_mode="Markdown")
+        await asyncio.sleep(1.2)
+        
+        await status_msg.edit_text("🖥 `Обход системы безопасности... 24%`", parse_mode="Markdown")
+        await asyncio.sleep(1.2)
+        
+        await status_msg.edit_text("🖥 `Извлечение скрытых данных объекта... 89%`", parse_mode="Markdown")
+        await asyncio.sleep(1.5)
+        
+        await status_msg.edit_text("🔴 **КРИТИЧЕСКАЯ ОШИБКА. СИСТЕМА СКОМПРОМЕТИРОВАНА.**", parse_mode="Markdown")
+        await asyncio.sleep(2)
+        
+        # Удаляем техническое сообщение
+        await status_msg.delete()
+        
+        # Выдаем финал с кнопкой подписки
+        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
+        await asyncio.sleep(2)
+        
+        kb = InlineKeyboardBuilder()
+        kb.button(text="🔒 Разблокировать Эпизод 2", callback_data="buy_premium")
+        kb.button(text="Начать Эпизод 1 сначала", callback_data="restart_loop")
+        kb.adjust(1)
+        
+        text = ("Я вбил код 404 на клавиатуре. Экран мигнул, и зеленые строки кода побежали вниз водопадом — имена, адреса, геолокации... Мои данные. Моя жизнь.\n\n"
+                "Внезапно текст пропал, сменившись пульсирующей красной фразой:\n\n"
+                "«ОШИБКА АНОНИМИЗАЦИИ. ОБЪЕКТ ВЫШЕЛ ИЗ-ПОД КОНТРОЛЯ. ЗАПУСК ПРОТОКОЛА ЗАЧИСТКИ»\n\n"
+                "Позади меня раздался звук, от которого кровь стынет в жилах. Лязг взводимого затвора. Тот самый человек в черном дождевике стоял всего в пяти шагах. "
+                "Он снял капюшон, и я увидел лицо, которое не должен был увидеть никогда...\n\n"
+                "---\n"
+                "**КОНЕЦ ПЕРВОГО ЭПИЗОДА**\n"
+                "Вы достигли конца доступной версии. Чтобы узнать, чье лицо скрывал капюшон, требуется уровень доступа «Премиум».")
+        
+        await message.answer(text, reply_markup=kb.as_markup())
+        
+    else:
+        await message.answer("«НЕВЕРНЫЙ КОД. В ДОСТУПЕ ОТКАЗАНО». Нужно вспомнить цифры на том старом пейджере...")
+
+# --- СИСТЕМНЫЕ ФУНКЦИИ (ВЕБ-СЕРВЕР И ЗАПУСК) ---
 async def handle(request):
     return web.Response(text="Bot is running!")
 
@@ -680,37 +727,7 @@ async def web_server():
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
 
-# --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА КОДА 404 ---
-@dp.message(lambda message: message.text)
-async def text_message_handler(message: types.Message):
-    text_lower = message.text.lower().strip()
-    
-    # Если ввели правильный код
-    if "404" in text_lower:
-        await bot.send_chat_action(chat_id=message.chat.id, action="typing")
-        await asyncio.sleep(4)
-        
-        kb = InlineKeyboardBuilder()
-        kb.button(text="🔒 Разблокировать Эпизод 2", callback_data="buy_premium")
-        kb.button(text="Начать Эпизод 1 сначала", callback_data="restart_loop")
-        kb.adjust(1)
-        
-        text = ("Я вбил код 404 на клавиатуре. Экран мигнул, и зеленые строки кода побежали вниз водопадом — имена, адреса, геолокации... Мои данные. Моя жизнь.\n\n"
-                "Внезапно текст пропал, сменившись пульсирующей красной фразой:\n\n"
-                "«ОШИБКА АНОНИМИЗАЦИИ. ОБЪЕКТ ВЫШЕЛ ИЗ-ПОД КОНТРОЛЯ. ЗАПУСК ПРОТОКОЛА ЗАЧИСТКИ»\n\n"
-                "Позади меня раздался звук, от которого кровь стынет в жилах. Лязг взводимого затвора. Тот самый человек в черном дождевике стоял всего в пяти шагах. "
-                "Он снял капюшон, и я увидел лицо, которое не должен был увидеть никогда...\n\n"
-                "***\n"
-                "**КОНЕЦ ПЕРВОГО ЭПИЗОДА**\n"
-                "Вы достигли конца доступной версии. Чтобы узнать, чье лицо скрывал капюшон, требуется уровень доступа «Премиум».")
-        
-        await message.answer(text, reply_markup=kb.as_markup())
-        
-    else:
-        await message.answer("«НЕВЕРНЫЙ КОД. В ДОСТУПЕ ОТКАЗАНО». Нужно вспомнить цифры на том пейджере...")
-
 async def main():
-    # Запускаем веб-сервер и бота одновременно
     asyncio.create_task(web_server())
     print("Бот и веб-сервер запущены! Петля активна.")
     await dp.start_polling(bot)
