@@ -13,6 +13,20 @@ dp = Dispatcher()
 
 # --- СЦЕНА 1: ПРОБУЖДЕНИЕ ---
 @dp.message(Command("start"))
+# --- ИНФОРМАЦИЯ ОБ ИГРЕ ---
+@dp.message(Command("info"))
+async def cmd_info(message: types.Message):
+    text = ("🌆 **Петля Невы** — это интерактивный текстовый хоррор-квест.\n\n"
+            "Вы застряли во временной петле. Ваша задача — выжить, принимая решения, и узнать, кто за вами охотится.\n\n"
+            "**Как играть:**\n"
+            "1. Внимательно читайте тексты и слушайте голосовые сообщения.\n"
+            "2. Изучайте фотографии — иногда ключи к разгадке (например, коды паролей) скрыты прямо на них.\n"
+            "3. Используйте логику, чтобы сбежать.\n\n"
+            "Команды:\n"
+            "/start — Начать/перезапустить игру\n"
+            "/info — Правила игры")
+            
+    await message.answer(text, parse_mode="Markdown")
 async def cmd_start(message: types.Message):
     # 1. Отправляем стартовую картинку (OIG2.jpg)
     await bot.send_chat_action(chat_id=message.chat.id, action="upload_photo")
