@@ -1,11 +1,13 @@
 import asyncio
 import os
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
-from aiogram.types import FSInputFile
+from aiogram.types import FSInputFile, LabeledPrice, PreCheckoutQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiohttp import web
 
+# ⚠️ БРАТИК, ВАЖНО: Как только всё заработает, обязательно зайди в BotFather, 
+# нажми Revoke Token и вставь сюда новый! Светить токен в интернете опасно.
 TOKEN = "8658859502:AAEa1fsHa-5GhhF5Jag1Kpr4D8CMFgEg8Z4"
 
 bot = Bot(token=TOKEN)
@@ -14,7 +16,6 @@ dp = Dispatcher()
 # --- СЦЕНА 1: ПРОБУЖДЕНИЕ (/start) ---
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    # Отправляем стартовую картинку (OIG2.jpg)
     await bot.send_chat_action(chat_id=message.chat.id, action="upload_photo")
     await asyncio.sleep(2)
     try:
@@ -40,7 +41,6 @@ async def cmd_start(message: types.Message):
 
     await message.answer(text, reply_markup=kb.as_markup())
 
-
 # --- ИНФОРМАЦИЯ ОБ ИГРЕ (/info) ---
 @dp.message(Command("info"))
 async def cmd_info(message: types.Message):
@@ -58,13 +58,9 @@ async def cmd_info(message: types.Message):
 
 # --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ СМЕРТИ (ГЛИТЧ И ПЕРЕЗАПУСК) ---
 async def trigger_death(callback: types.CallbackQuery, death_text: str):
-    # Убираем кнопки
     await callback.message.edit_reply_markup(reply_markup=None) 
-    
-    # Печатаем уникальный текст смерти (как именно он умер в этот раз)
     msg = await callback.message.answer(death_text)
     
-    # Тот самый крутой эффект глитча
     await asyncio.sleep(3)
     await msg.edit_text("🩸 `СИНХРОНИЗАЦИЯ ПРЕРВАНА...`", parse_mode="Markdown")
     await asyncio.sleep(1.2)
@@ -73,7 +69,6 @@ async def trigger_death(callback: types.CallbackQuery, death_text: str):
     await msg.edit_text("⏳ `ИНИЦИАЛИЗАЦИЯ ПЕРЕЗАПУСКА ПЕТЛИ...`", parse_mode="Markdown")
     await asyncio.sleep(2)
     
-    # Выводим кнопку возврата
     kb = InlineKeyboardBuilder()
     kb.button(text="🔄 Проснуться снова", callback_data="restart_loop")
     kb.adjust(1)
@@ -81,7 +76,7 @@ async def trigger_death(callback: types.CallbackQuery, death_text: str):
     await msg.edit_text("Вы погибли. Петля замкнулась.\n\nНажмите кнопку ниже, чтобы начать заново.", reply_markup=kb.as_markup())
 
 # --- СЦЕНА 2: АВАРИЯ (БЫСТРАЯ СЦЕНА, БЕЗ АУДИО) ---
-@dp.callback_query(lambda c: c.data == "scene_2")
+@dp.callback_query(F.data == "scene_2")
 async def scene_2(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
         
@@ -102,9 +97,8 @@ async def scene_2(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- СЦЕНА 3: ГЛАЗОК ---
-@dp.callback_query(lambda c: c.data == "scene_3_peephole")
+@dp.callback_query(F.data == "scene_3_peephole")
 async def scene_3_peephole(callback: types.CallbackQuery):
-    # Убираем кнопки у прошлого сообщения, чтобы игрок не мог нажать их дважды
     await callback.message.edit_reply_markup(reply_markup=None) 
     
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -122,8 +116,9 @@ async def scene_3_peephole(callback: types.CallbackQuery):
     
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
+
 # --- СЦЕНА 3: НОЖ И ЗАСАДА ---
-@dp.callback_query(lambda c: c.data == "scene_3_knife")
+@dp.callback_query(F.data == "scene_3_knife")
 async def scene_3_knife(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -142,18 +137,17 @@ async def scene_3_knife(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- СМЕРТЬ: ПРЫЖОК В ОКНО ---
-@dp.callback_query(lambda c: c.data == "scene_3_window")
+@dp.callback_query(F.data == "scene_3_window")
 async def scene_3_window(callback: types.CallbackQuery):
     text = ("Я разбил стекло табуреткой и попытался вылезти на ржавую пожарную лестницу. "
             "Подошва скользнула на мокром от дождя металле. Пальцы сорвались. "
             "Ветер свистнул в ушах, и мокрый асфальт Лиговского стремительно бросился мне навстречу. Удар. Темнота...")
             
-    # Снова используем ту же функцию!
     await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ (ПРОСТО НАХОДИМ ПЕЙДЖЕР) ---
-@dp.callback_query(lambda c: c.data == "scene_4_bathroom")
+# --- СЦЕНА 4: ОТБЕЖАТЬ В ВАННУЮ ---
+@dp.callback_query(F.data == "scene_4_bathroom")
 async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
@@ -186,19 +180,18 @@ async def scene_4_bathroom(callback: types.CallbackQuery):
     await callback.answer()
     
 # --- СМЕРТЬ: АТАКА НА КИЛЛЕРА ---
-@dp.callback_query(lambda c: c.data == "scene_4_attack")
+@dp.callback_query(F.data == "scene_4_attack")
 async def scene_4_attack(callback: types.CallbackQuery):
     text = ("Я рванул замок и со всей силы толкнул дверь плечом. Тяжелое деревянное полотно с хрустом впечаталось в фигуру в дождевике. "
             "Он пошатнулся, но не упал. Я с рычанием бросился на него, целясь в шею, но его реакция была нечеловеческой.\n\n"
             "Взмах руки в черной перчатке. Короткая вспышка тусклого света на лезвии. Жгучая, невыносимая боль пронзила грудь. "
             "Я осел на грязный кафель, захлебываясь. Черный капюшон склонился надо мной. Темнота...")
             
-    # Запускаем нашу универсальную функцию!
     await trigger_death(callback, text)
     await callback.answer()
 
-# --- ПЕРЕЗАПУСК ПЕТЛИ (ТОЛЬКО ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
-@dp.callback_query(lambda c: c.data == "restart_loop")
+# --- ПЕРЕЗАПУСК ПЕТЛИ ---
+@dp.callback_query(F.data == "restart_loop")
 async def restart_loop(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
@@ -215,7 +208,6 @@ async def restart_loop(callback: types.CallbackQuery):
     kb.button(text="Успокойся. Подробности. Как умер?", callback_data="scene_2")
     kb.adjust(1) 
     
-    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
     text = ("*СНОВА ЭТОТ КОШМАР*\n\n"
             "Я резко сел на кровати, жадно хватая ртом воздух. Грудь горела, словно там всё ещё торчало лезвие, хотя кожа была целой. "
             "Холодный пот заливал глаза. На часах снова 19:42. Я схватил телефон и записал аудиосообщение своему единственному контакту, "
@@ -225,7 +217,7 @@ async def restart_loop(callback: types.CallbackQuery):
     await callback.answer()
 
 # --- СЦЕНА 5: ПРОЧИТАТЬ ПЕЙДЖЕР ---
-@dp.callback_query(lambda c: c.data == "scene_5_pager_read")
+@dp.callback_query(F.data == "scene_5_pager_read")
 async def scene_5_pager_read(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -233,8 +225,8 @@ async def scene_5_pager_read(callback: types.CallbackQuery):
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Лезть в узкое вентиляционное окно", callback_data="scene_6_vent")
-    kb.button(text="Схватить ножницы и ждать у двери", callback_data="scene_6_scissors")
-    kb.button(text="Спрятаться за шторкой для ванной", callback_data="scene_6_curtain")
+    kb.button(text="Схватить ножницы и ждать у двери", callback_data="scene_6_hide")
+    kb.button(text="Спрятаться за шторкой для ванной", callback_data="scene_6_hide")
     kb.adjust(1)
     
     text = ("Я нажал единственную рабочую кнопку на пейджере. На зеленоватом дисплее высветилось одно-единственное слово:\n\n"
@@ -244,27 +236,18 @@ async def scene_5_pager_read(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 5: ИСКАТЬ ОРУЖИЕ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_5_search_weapon")
+# --- СЦЕНА 5: ИСКАТЬ ОРУЖИЕ ---
+@dp.callback_query(F.data == "scene_5_search_weapon")
 async def scene_5_search_weapon(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("К черту пейджер! Я лихорадочно шарю по полкам, хватаю тяжелые парикмахерские ножницы и встаю в стойку. "
             "Дверь разлетается в щепки. В ванную вваливается массивная фигура в черном дождевике. \n\n"
             "Я бью ножницами наотмашь, целясь в шею... но лезвие со скрежетом скользит по чему-то твердому под плащом. Броня? "
             "Он даже не дрогнул. Огромная рука в перчатке перехватывает мое горло и с нечеловеческой силой впечатывает в кафель. Воздух кончился. Снова темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 6: ВЕНТИЛЯЦИЯ (СПАСЕНИЕ НА УЛИЦУ) ---
-@dp.callback_query(lambda c: c.data == "scene_6_vent")
+# --- СЦЕНА 6: ВЕНТИЛЯЦИЯ ---
+@dp.callback_query(F.data == "scene_6_vent")
 async def scene_6_vent(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -283,46 +266,28 @@ async def scene_6_vent(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 6: ПРЯТАТЬСЯ ЗА ШТОРКОЙ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_6_hide")
+# --- СЦЕНА 6: ПРЯТАТЬСЯ ---
+@dp.callback_query(F.data == "scene_6_hide")
 async def scene_6_hide(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Паника сковала меня. Я залез в саму ванну и задернул дешевую пластиковую шторку. Гениальный план, ничего не скажешь... "
             "Дверь с грохотом вылетела. Шаги приблизились к раковине. Секунда тишины. \n\n"
             "Шторку резко сдернули. Человек в дождевике даже не стал доставать нож. Он просто протянул руку в черной перчатке и сжал мое лицо, вдавливая в затылок. "
             "Хруст шейных позвонков. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 4: НОЖ - УДАР В ЛОБ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_4_strike")
+# --- СЦЕНА 4: НОЖ - УДАР В ЛОБ ---
+@dp.callback_query(F.data == "scene_4_strike")
 async def scene_4_strike(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Едва дверь приоткрылась, я с криком рванул вперед, нанося удар ножом сверху вниз. \n\n"
             "Но я недооценил его реакцию. Дверь резко распахнулась до конца, ударив меня по руке. Нож со звоном отлетел в сторону. "
             "Фигура в дождевике сделала неуловимое движение. Тупое лезвие пробило ребра. Я осел на пол, хватая ртом воздух. "
             "Холодные глаза из-под капюшона. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 4: НОЖ - НАПАСТЬ СО СПИНЫ (ВЫЖИВАНИЕ) ---
-@dp.callback_query(lambda c: c.data == "scene_4_stealth")
+# --- СЦЕНА 4: НОЖ - НАПАСТЬ СО СПИНЫ ---
+@dp.callback_query(F.data == "scene_4_stealth")
 async def scene_4_stealth(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
@@ -346,63 +311,17 @@ async def scene_4_stealth(callback: types.CallbackQuery):
         
     await callback.answer()
 
-# --- СЦЕНА 5: ОСМОТРЕТЬ КАРМАНЫ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_5_loot")
+# --- СЦЕНА 5: ОСМОТРЕТЬ КАРМАНЫ ---
+@dp.callback_query(F.data == "scene_5_loot")
 async def scene_5_loot(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Жадность или глупое любопытство сыграли со мной злую шутку. Я наклонился над лежащим телом и сунул руку в карман его мокрого дождевика.\n\n"
             "Внезапно его рука, словно стальной капкан, сомкнулась на моем запястье. Он не был в отключке! Резкий рывок на себя, тусклый блеск лезвия... "
             "Холодная сталь вошла мне точно под ребра. Я рухнул рядом с ним, глядя, как он медленно поднимается. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 4: ОКНО - НА КРЫШУ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_4_roof")
-async def scene_4_roof(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
-    kb.adjust(1)
-    
-    text = ("Я рванул вверх по ржавым ступеням. Дождь хлестал в лицо, металл скользил под руками. Я выбрался на плоскую крышу и обернулся.\n\n"
-            "Он уже был там. Черный силуэт на фоне грозового неба. Я попятился, поскользнулся на мокром рубероиде и потерял равновесие. "
-            "Край крыши. Пустота. Ощущение свободного падения и резкий, дробящий кости удар о мокрый асфальт двора. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
-    await callback.answer()
-
-# --- СЦЕНА 4: ОКНО - ВНИЗ ВО ДВОР (ВЫЖИВАНИЕ) ---
-@dp.callback_query(lambda c: c.data == "scene_4_yard")
-async def scene_4_yard(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Рвануть дворами к метро", callback_data="scene_7_subway")
-    kb.button(text="Спрятаться в арке и осмотреться", callback_data="scene_7_arch")
-    kb.adjust(1)
-    
-    text = ("Не раздумывая, я начал быстро спускаться вниз. Ржавые крепления опасно скрипели, но выдержали. Я спрыгнул в грязь темного петербургского двора-колодца.\n\n"
-            "Глянув наверх, я увидел, как из моего разбитого окна высовывается фигура в черном. Он заметил меня. "
-            "Нужно убираться отсюда! До метро Василеостровская пара кварталов, но бежать по открытым улицам — чистое самоубийство.")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
-    await callback.answer()
-
-# --- СЦЕНА 7: ПОБЕГ В МЕТРО И НАХОДКА ЖЕТОНА ---
-@dp.callback_query(lambda c: c.data == "scene_7_subway")
+# --- СЦЕНА 7: ПОБЕГ В МЕТРО ---
+@dp.callback_query(F.data == "scene_7_subway")
 async def scene_7_subway(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
@@ -419,7 +338,6 @@ async def scene_7_subway(callback: types.CallbackQuery):
     
     kb = InlineKeyboardBuilder()
     kb.button(text="Закинуть жетон в турникет", callback_data="scene_9_token")
-    kb.button(text="Оглянуться назад на улицу", callback_data="scene_8_look_back") # Если этой сцены нет, можешь убрать эту кнопку
     kb.adjust(1)
     
     text = ("Я вылетел из парадной, чуть не сорвав дверь с петель, и рванул под проливной дождь. "
@@ -432,68 +350,8 @@ async def scene_7_subway(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 8: ТЕЛЕФОННАЯ БУДКА (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_8_booth")
-async def scene_8_booth(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
-    text = ("Я подошел к разбитой телефонной будке. Внутри пахло сыростью и старым пластиком. Я снял трубку — гудков не было, только тихий статический треск. \n\n"
-            "Внезапно треск превратился в шепот: «Ты не там ищешь». "
-            "Я резко обернулся, но дверь будки уже была заблокирована. Снаружи стоял он. Фигура в дождевике просто прижала ладонь к стеклу. "
-            "Стекло взорвалось внутрь тысячами острых осколков. Один из них попал прямо в артерию на шее. Горячая кровь. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
-    await callback.answer()
-
-# --- СЦЕНА 8: ПОДЗЕМНЫЙ ПЕРЕХОД (СЮЖЕТ И ТУРНИКЕТ) ---
-@dp.callback_query(lambda c: c.data == "scene_8_underground")
-async def scene_8_underground(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Опустить черный жетон в щель", callback_data="scene_9_token")
-    kb.button(text="Перепрыгнуть через турникет", callback_data="scene_9_jump")
-    kb.adjust(1)
-    
-    text = ("Я послушался записки и шагнул в сырую темноту подземного перехода. Свет с улицы сюда почти не проникал. "
-            "Ступени вели всё ниже и ниже, глубже, чем должно быть обычное метро. \n\n"
-            "Внезапно туннель перегородила массивная железная решетка. В ней была оставлена только одна узкая калитка, а перед ней — старый советский турникет. "
-            "Лампочка на нем не горела. На металлическом корпусе блестела узкая щель жетоноприемника. \n\n"
-            "Где-то на ступенях позади меня послышались тяжелые, хлюпающие шаги. Он идет следом! Времени в обрез.")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
-    await callback.answer()
-
-# --- СЦЕНА 9: ПРЫЖОК ЧЕРЕЗ ТУРНИКЕТ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_9_jump")
-async def scene_9_jump(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
-    text = ("Я решил не тратить время и, опершись на скользкий металл, прыгнул через турникет. \n\n"
-            "В ту же секунду пространство вокруг меня дрогнуло, словно на зажеванной видеокассете. "
-            "Воздух стал плотным, как бетон. Мое тело буквально застыло в воздухе прямо над турникетом, я не мог пошевелить даже пальцем, словно баг в программном коде.\n\n"
-            "Система не прощает нарушений. Из темноты не спеша вышел человек в дождевике. Он подошел, посмотрел на меня с абсолютным равнодушием "
-            "и вонзил нож мне в сердце. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
-    await callback.answer()
-
-# --- СЦЕНА 9: ЧЕРНЫЙ ЖЕТОН (СЮЖЕТ - ПЛАТФОРМА) ---
-@dp.callback_query(lambda c: c.data == "scene_9_token")
+# --- СЦЕНА 9: ЧЕРНЫЙ ЖЕТОН ---
+@dp.callback_query(F.data == "scene_9_token")
 async def scene_9_token(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
@@ -516,26 +374,17 @@ async def scene_9_token(callback: types.CallbackQuery):
         
     await callback.answer()
 
-# --- СЦЕНА 10: ЧАСЫ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_10_clock")
+# --- СЦЕНА 10: ЧАСЫ ---
+@dp.callback_query(F.data == "scene_10_clock")
 async def scene_10_clock(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(3)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Я подошел к огромным циферблатам. Стрелки бешено вращались против часовой. Я завороженно смотрел на них, пытаясь понять логику механизма, как вдруг осознал: они буквально отматывают мое время назад.\n\n"
             "Глухой звук шагов позади. Пространство на платформе снова сомкнулось. Тот факт, что я задержался, позволил «ему» нагнать меня. "
             "Я обернулся слишком поздно. Человек в дождевике стоял вплотную. Холодное лезвие. Темнота. Очередная ветка реальности обрывается...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 10: ПУСТОЙ ВАГОН (СЮЖЕТ - ПАРАЛЛЕЛЬНЫЕ МИРЫ) ---
-@dp.callback_query(lambda c: c.data == "scene_10_train")
+# --- СЦЕНА 10: ПУСТОЙ ВАГОН ---
+@dp.callback_query(F.data == "scene_10_train")
 async def scene_10_train(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -554,28 +403,19 @@ async def scene_10_train(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 11: ОКНО (СМЕРТЬ ОТ ПЕРЕГРУЗКИ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_11_window")
+# --- СЦЕНА 11: ОКНО ---
+@dp.callback_query(F.data == "scene_11_window")
 async def scene_11_window(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Я прислонился лбом к холодному стеклу. Вспышки в туннеле становились всё четче. Я увидел... себя. "
             "В одной из реальностей я просто крутил баранку автомобиля, уставший после обычной смены. В другой — меня насмерть сбивала машина. "
             "Это была наглядная демонстрация квантового бессмертия. Я видел бесконечное древо параллельных миров.\n\n"
             "Но человеческий мозг не создан для того, чтобы видеть исходный код симуляции. От бесконечного потока данных пространство начало искажаться, "
             "мысли превратились в ослепительный белый шум. Разум просто не выдержал перегрузки. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 11: ПАПКА С ДОСЬЕ (ТОЛЬКО ГОЛОСОВОЕ + ДЕЙСТВИЕ) ---
-@dp.callback_query(lambda c: c.data == "scene_11_folder")
+# --- СЦЕНА 11: ПАПКА С ДОСЬЕ ---
+@dp.callback_query(F.data == "scene_11_folder")
 async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     
@@ -592,7 +432,6 @@ async def scene_11_folder(callback: types.CallbackQuery):
     kb.button(text="Остаться в вагоне", callback_data="scene_12_stay")
     kb.adjust(1)
     
-    # НОВЫЙ ТЕКСТ (ОПИСАНИЕ ДЕЙСТВИЙ)
     text = ("Поезд мчался сквозь темноту с глухим, неестественным гулом. Я открыл пухлую картонную папку, лежащую на сиденье, "
             "и пробежался глазами по первым страницам. Внутри всё похолодело. \n\n"
             "Я нажал кнопку отправки голосового сообщения. Кто бы ни был на другом конце — он должен знать масштабы того дерьма, в которое я вляпался. "
@@ -601,26 +440,17 @@ async def scene_11_folder(callback: types.CallbackQuery):
     await callback.message.answer(text, reply_markup=kb.as_markup())
     await callback.answer()
 
-# --- СЦЕНА 12: ОСТАТЬСЯ В ВАГОНЕ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_12_stay")
+# --- СЦЕНА 12: ОСТАТЬСЯ В ВАГОНЕ ---
+@dp.callback_query(F.data == "scene_12_stay")
 async def scene_12_stay(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Снова этот кошмар. Проснуться.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Я решил, что безопаснее остаться внутри, и отступил вглубь вагона. Двери с шипением закрылись, отрезая меня от станции.\n\n"
             "Поезд сорвался с места. Вскоре ровный гул серверов сменился жестким металлическим лязгом. Звук был до боли знакомый — точь-в-точь как стук растянутой цепи ГРМ на моем старом пежо с двигателем EP6 перед тем, как он окончательно встал и потребовал капиталки.\n\n"
             "Лязг перерос в оглушающий рев. Вагон начало трясти так, что меня швырнуло на пол. Стены стали раскаляться докрасна, воздух выгорел за секунду. Похоже, система просто удалила этот вагон как программный мусор. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
-# --- СЦЕНА 12: ПЛАТФОРМА «УЗЕЛ СВЯЗИ» (СЮЖЕТ) ---
-@dp.callback_query(lambda c: c.data == "scene_12_platform")
+# --- СЦЕНА 12: ПЛАТФОРМА «УЗЕЛ СВЯЗИ» ---
+@dp.callback_query(F.data == "scene_12_platform")
 async def scene_12_platform(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="upload_photo")
@@ -643,28 +473,19 @@ async def scene_12_platform(callback: types.CallbackQuery):
         
     await callback.answer()
 
-# --- СЦЕНА 13: ГЕРМОДВЕРЬ (СМЕРТЬ И ПЕТЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_13_door")
+# --- СЦЕНА 13: ГЕРМОДВЕРЬ ---
+@dp.callback_query(F.data == "scene_13_door")
 async def scene_13_door(callback: types.CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None) 
-    await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
-    await asyncio.sleep(4)
-    
-    kb = InlineKeyboardBuilder()
-    kb.button(text="Резкий вдох. Открыть глаза.", callback_data="restart_loop")
-    kb.adjust(1)
-    
     text = ("Я проигнорировал терминал и бросился к огромной гермодвери. Если это бункер или серверная, у нее должен быть черный ход! "
             "Я ухватился за тяжелый металлический вентиль и с рычанием попытался его провернуть.\n\n"
             "Внезапно раздался оглушительный вой сирены. Красные лампы залили зал тревожным светом. "
             "Механизм двери пришел в движение, но не для того, чтобы открыться. Тяжелые стальные плиты сдвинулись, намертво зажимая мою руку. "
             "От болевого шока я потерял сознание еще до того, как система запустила протокол термической очистки помещения. Темнота...")
-    
-    await callback.message.answer(text, reply_markup=kb.as_markup())
+    await trigger_death(callback, text)
     await callback.answer()
 
 # --- СЦЕНА 13: ГЛАВНЫЙ ТЕРМИНАЛ (ЗАПРОС ПАРОЛЯ) ---
-@dp.callback_query(lambda c: c.data == "scene_13_terminal")
+@dp.callback_query(F.data == "scene_13_terminal")
 async def scene_13_terminal(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None) 
     await bot.send_chat_action(chat_id=callback.message.chat.id, action="typing")
@@ -678,20 +499,53 @@ async def scene_13_terminal(callback: types.CallbackQuery):
     await callback.message.answer(text)
     await callback.answer()
 
-# --- ЗАГЛУШКА ДЛЯ ПРЕМИУМА ---
-@dp.callback_query(lambda c: c.data == "buy_premium")
+# ==============================================================================
+# --- ИНТЕГРАЦИЯ TELEGRAM STARS (ОПЛАТА ЭПИЗОДА 2) ---
+# ==============================================================================
+@dp.callback_query(F.data == "buy_premium")
 async def buy_premium(callback: types.CallbackQuery):
-    await callback.answer("Функция оплаты находится в разработке! Следите за обновлениями.", show_alert=True)
+    await callback.answer()
+    
+    prices = [LabeledPrice(label="Эпизод 2: Изнанка Петли", amount=100)] 
+    
+    await bot.send_invoice(
+        chat_id=callback.message.chat.id,
+        title="Петля Невы — Эпизод 2",
+        description="Полный доступ ко второму эпизоду: квантовый сюжет, хакерский OSINT, анализ вероятностей и механика выживания.",
+        payload="episode_2_access",
+        provider_token="", 
+        currency="XTR",    
+        prices=prices,
+        start_parameter="pay_episode_2"
+    )
 
+@dp.pre_checkout_query()
+async def pre_checkout_query(pre_checkout: PreCheckoutQuery):
+    await pre_checkout.answer(ok=True)
+
+@dp.message(F.successful_payment)
+async def successful_payment(message: types.Message):
+    kb = InlineKeyboardBuilder()
+    kb.button(text="▶️ Начать Эпизод 2", callback_data="scene_1_episode_2")
+    kb.adjust(1)
+    
+    player_name = message.from_user.first_name
+    
+    text = (f"💳 **Оплата прошла успешно!**\n\n"
+            f"Уровень доступа повышен. Протокол безопасности деактивирован.\n"
+            f"Добро пожаловать на изнанку реальности, {player_name}.\n\n"
+            f"Нажми кнопку ниже, чтобы сделать шаг во второй эпизод.")
+    
+    await message.answer(text, reply_markup=kb.as_markup(), parse_mode="Markdown")
+
+# ==============================================================================
 # --- ИНТЕРАКТИВНАЯ ЗАГАДКА: ОБРАБОТКА ТЕКСТА (С ЭФФЕКТОМ ВЗЛОМА) ---
-# ВАЖНО: Этот блок ловит любой текст от пользователя, поэтому он должен быть последним из всех сценариев!
-@dp.message(lambda message: message.text)
+# ==============================================================================
+@dp.message(F.text)
 async def text_message_handler(message: types.Message):
     text_lower = message.text.lower().strip()
     
-    # Если ввели правильный код
     if "404" in text_lower:
-        # Эффект взлома терминала (меняющийся текст)
         status_msg = await message.answer("🖥 `Инициализация протокола доступа...`", parse_mode="Markdown")
         await asyncio.sleep(1.2)
         
@@ -704,10 +558,8 @@ async def text_message_handler(message: types.Message):
         await status_msg.edit_text("🔴 **КРИТИЧЕСКАЯ ОШИБКА. СИСТЕМА СКОМПРОМЕТИРОВАНА.**", parse_mode="Markdown")
         await asyncio.sleep(2)
         
-        # Удаляем техническое сообщение
         await status_msg.delete()
         
-        # Выдаем финал с кнопкой подписки
         await bot.send_chat_action(chat_id=message.chat.id, action="typing")
         await asyncio.sleep(2)
         
